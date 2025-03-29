@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/rust_isolate.dart';
+
+
+
+
 
 void main() {
+  //initializeRust();
+  starta();
   runApp(const MyApp());
 }
 
