@@ -1,8 +1,25 @@
+import 'dart:async';
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
-import 'package:frontend/rust_bootstrap.dart';
+import 'package:frontend/comm/rust_launcher.dart';
+
+import 'comm/sender.dart';
+import 'comm/sender_impl.dart';
 
 void main() {
   launchRust();
+
+  Isolate.spawn((_) {
+    int counter = 1;
+    Timer.periodic(Duration(milliseconds: 1000), (timer) {
+      String msg = "Mensaje $counter enviado";
+      Sender sender = SenderImpl();
+      sender.send(msg);
+      counter++;
+    });
+  }, null);
+
   runApp(const MyApp());
 }
 
