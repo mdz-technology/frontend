@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/card_builder.dart';
 import 'package:frontend/padding_builder.dart';
 import 'package:frontend/row_builder.dart';
 import 'package:frontend/widgets/navbar_builder.dart';
@@ -6,12 +7,12 @@ import 'package:frontend/widgets/scaffold_builder.dart';
 import 'package:frontend/widgets/text_builder.dart';
 import 'package:frontend/textfield_builder.dart';
 
-import 'listview_builder.dart';
+import 'widgets/listview_builder.dart';
 import 'widgets/appbar_builder.dart';
 import 'widgets/elevatedbutton_builder.dart';
 import 'center_builder.dart';
 import 'widgets/column_builder.dart';
-import 'container_builder.dart';
+import 'widgets/container_builder.dart';
 import 'drawer_builder.dart';
 import 'widgets/app_builder.dart';
 import 'icon_builder.dart';
@@ -39,6 +40,7 @@ class WidgetFactory {
     'Center': buildCenter,
     'Icon': buildPlatformIcon,
     'ListView': buildListView,
+    'Card': buildCard,
     /*'ListTitle': buildListTitle,
     'Expanded': buildExpanded,
     'SizedBox': buildSizedBox,

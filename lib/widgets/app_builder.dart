@@ -3,7 +3,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart'; // Impo
 import 'package:frontend/widget_factory.dart';
 
 Widget buildApp(Map<String, dynamic> json) {
-  // Valores predeterminados
   String defaultInitialRoute = '/';
   Widget defaultHome = Container();
   Map<String, dynamic> defaultRoutesJson = {};
