@@ -5,29 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:frontend/comm/rust_launcher.dart';
 import 'package:frontend/widget_factory.dart';
-import 'package:frontend/widgets/appbar_builder.dart';
-import 'package:frontend/widgets/container_builder.dart';
-import 'package:frontend/widgets/drawer_state.dart';
-import 'package:frontend/widgets/scaffold_builder.dart';
-import 'package:frontend/widgets/text_builder.dart';
+import 'package:frontend/widgets/app_builder.dart';
 import 'package:frontend/widgets/widget_state_notifier.dart';
-import 'package:frontend/widgets/done/app_builder.dart';
 import 'package:provider/provider.dart';
 
 import 'comm/sender.dart';
 import 'comm/sender_impl.dart';
-import 'drawer_builder.dart';
 
 void main() {
   AppBuilder.register();
-  ScaffoldBuilder.register();
-  AppBarBuilder.register();
-  TextBuilder.register();
-  DrawerBuilder.register();
-  ContainerBuilder.register();
 
-  /*launchRust();
-
+  launchRust();
   Isolate.spawn((_) {
     int counter = 1;
     Timer.periodic(Duration(milliseconds: 1000), (timer) {
@@ -36,7 +24,7 @@ void main() {
       sender.send(msg);
       counter++;
     });
-  }, null);*/
+  }, null);
 
   // JSON con la estructura de PlatformApp
   Map<String, dynamic> json = {
@@ -107,10 +95,6 @@ void main() {
               widgetStateNotifier.generateTestData("lista_dinamica_1");
               return widgetStateNotifier;
             },
-          ),
-          ChangeNotifierProvider(
-            // <-- Añade el proveedor para DrawerState
-            create: (_) => DrawerState(),
           ),
         ],
         child: WidgetFactory.buildWidgetFromJson(context, json),

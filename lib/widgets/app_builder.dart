@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:frontend/widget_factory.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import '../utils.dart';
+import 'utils.dart';
 
 class AppBuilder  {
 
