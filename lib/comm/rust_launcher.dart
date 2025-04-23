@@ -2,11 +2,10 @@ import 'dart:ffi';
 import 'dart:isolate';
 
 import 'isolate_receiver.dart';
+import 'native_lib.dart';
 
 typedef StartRustThreadC = Void Function(Int64);
 typedef StartRustThreadDart = void Function(int);
-
-final DynamicLibrary nativeLib = DynamicLibrary.open('../backend/target/debug/libbackend.so');
 
 void launchRust() {
   IsolateReceiver isolateReceiver = IsolateReceiver();
@@ -21,5 +20,7 @@ void _startRustThread(int sendPortNative) {
 
   startRustThread(sendPortNative);
 }
+
+
 
 

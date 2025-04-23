@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "1.1.2"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: "2f5709ae4d3d59dd8f7cd309b4e023046b57d8a6c82130785d2b0e5868084e76"
@@ -70,6 +70,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_adaptive_scaffold:
+    dependency: "direct main"
+    description:
+      name: flutter_adaptive_scaffold
+      sha256: "7279d74da2f2531a16d21c2ec327308778c3aedd672dfe4eaf3bf416463501f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -78,6 +86,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_platform_widgets:
     dependency: "direct main"
     description:
@@ -91,6 +104,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.0"
   leak_tracker:
     dependency: transitive
     description:

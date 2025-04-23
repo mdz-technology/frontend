@@ -5,18 +5,18 @@ import 'package:frontend/widget_factory.dart';
 import 'package:frontend/widgets/widget_state_notifier.dart';
 import 'package:provider/provider.dart';
 
-Widget buildListView(Map<String, dynamic> json) {
+Widget buildListView(BuildContext context, Map<String, dynamic> json) {
   final widgetId = json['id'];
   final properties = json['properties'] as Map<String, dynamic>? ?? {};
   final childrenJson = json['children'] as List<dynamic>? ?? [];
 
   final children = childrenJson
-      .map((child) => WidgetFactory.buildWidgetFromJson(child))
+      .map((child) => WidgetFactory.buildWidgetFromJson(context, child))
       .toList();
 
   final itemExtent = (properties['itemExtent'] as num?)?.toDouble();
   final prototypeItem = properties['prototypeItem'] != null
-      ? WidgetFactory.buildWidgetFromJson(properties['prototypeItem'])
+      ? WidgetFactory.buildWidgetFromJson(context, properties['prototypeItem'])
       : null;
 
   if ([itemExtent, prototypeItem].where((e) => e != null).length > 1) {

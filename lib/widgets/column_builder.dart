@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 
-Widget buildColumn(Map<String, dynamic> json) {
+Widget buildColumn(BuildContext context, Map<String, dynamic> json) {
   return Column(
     mainAxisAlignment: _parseMainAxisAlignment(json['mainAxisAlignment']),
     mainAxisSize: _parseMainAxisSize(json['mainAxisSize']),
@@ -9,16 +9,16 @@ Widget buildColumn(Map<String, dynamic> json) {
     textDirection: _parseTextDirection(json['textDirection']),
     verticalDirection: _parseVerticalDirection(json['verticalDirection']),
     textBaseline: _parseTextBaseline(json['textBaseline']),
-    children: _buildChildren(json['children']),
+    children: _buildChildren(context, json['children']),
   );
 }
 
-List<Widget> _buildChildren(List<dynamic>? childrenJson) {
+List<Widget> _buildChildren(BuildContext context, List<dynamic>? childrenJson) {
   if (childrenJson == null) return [];
 
   return childrenJson.map<Widget>((childJson) {
     if (childJson is Map<String, dynamic>) {
-      return WidgetFactory.buildWidgetFromJson(childJson);
+      return WidgetFactory.buildWidgetFromJson(context, childJson);
     } else {
       return SizedBox.shrink(); // fallback si el elemento no es válido
     }

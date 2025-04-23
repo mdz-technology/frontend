@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 
-PreferredSizeWidget? buildPreferredSizeWidget(Map<String, dynamic> json) {
-  final widget = WidgetFactory.buildWidgetFromJson(json);
+Widget? buildPreferredSizeWidget(BuildContext context, Map<String, dynamic> json) {
+  final widget = WidgetFactory.buildWidgetFromJson(context, json);
   if (widget is PreferredSizeWidget) {
     return widget;
   } else {

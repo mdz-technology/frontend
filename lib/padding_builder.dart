@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 
-Widget buildPadding(Map<String, dynamic> json) {
+Widget buildPadding(BuildContext context, Map<String, dynamic> json) {
   final padding = json['padding'];
   EdgeInsets edgeInsets = EdgeInsets.all(0);
 
@@ -12,7 +12,7 @@ Widget buildPadding(Map<String, dynamic> json) {
   return Padding(
     padding: edgeInsets,
     child: json['child'] != null
-        ? WidgetFactory.buildWidgetFromJson(json['child'])
+        ? WidgetFactory.buildWidgetFromJson(context, json['child'])
         : null,
   );
 }

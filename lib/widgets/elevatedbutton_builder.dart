@@ -3,14 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:frontend/widget_factory.dart';
 
-Widget buildElevatedButton(Map<String, dynamic> json) {
+Widget buildElevatedButton(BuildContext context, Map<String, dynamic> json) {
   return PlatformElevatedButton(
     key: json.containsKey('key') ? Key(json['key']) : null,
     widgetKey: json.containsKey('widgetKey') ? Key(json['widgetKey']) : null,
     onPressed: json['onPressed'] == false ? null : () => print('ElevatedButton pressed'),
     onLongPress: json['onLongPress'] == true ? () => print('Long press') : null,
     child: json['child'] != null
-        ? WidgetFactory.buildWidgetFromJson(json['child'])
+        ? WidgetFactory.buildWidgetFromJson(context, json['child'])
         : const Text('Botón'),
 
     padding: json['padding'] != null

@@ -6,14 +6,14 @@ import 'package:frontend/widget_factory.dart';
 import 'package:frontend/widgets/widget_state_notifier.dart';
 import 'package:provider/provider.dart';
 
-Widget buildCard(Map<String, dynamic> json) {
+Widget buildCard(BuildContext context, Map<String, dynamic> json) {
   final widgetId = json['id'];
   final padding = _parseEdgeInsets(json['properties']?['padding']);
   final childrenJson = json['children'] as List<dynamic>? ?? [];
 
   // Generación dinámica de widgets a partir del JSON
   final childWidgets = childrenJson
-      .map((child) => WidgetFactory.buildWidgetFromJson(child))
+      .map((child) => WidgetFactory.buildWidgetFromJson(context, child))
       .toList();
 
   return CardWidget(

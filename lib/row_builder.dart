@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 
-Widget buildRow(Map<String, dynamic> json) {
+Widget buildRow(BuildContext context, Map<String, dynamic> json) {
   return Row(
     mainAxisAlignment: parseMainAxisAlignment(json['mainAxisAlignment']),
     crossAxisAlignment: parseCrossAxisAlignment(json['crossAxisAlignment']),
     children: (json['children'] as List)
-        .map((child) => WidgetFactory.buildWidgetFromJson(child))
+        .map((child) => WidgetFactory.buildWidgetFromJson(context, child))
         .toList(),
   );
 }
