@@ -6,41 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class WidgetStateNotifier with ChangeNotifier {
-  // Estado centralizado donde cada widget puede tener su propio estado
   final Map<String, dynamic> _states = {};
 
-  // Getter para obtener el estado de un widget dado
   dynamic getState(String widgetId) => _states[widgetId];
 
-  // Setter para actualizar el estado de un widget específico
   void updateState(String widgetId, dynamic newState) {
     _states[widgetId] = newState;
-    notifyListeners(); // Notificar a los oyentes de que el estado ha cambiado
+    notifyListeners();
   }
-
-  /*List<Widget> getWidgetListState(String widgetId) {
-    final state = _states[widgetId];
-    return state is List<Widget> ? List<Widget>.from(state) : [];
-  }
-
-  bool getBoolState(String widgetId) {
-    final state = _states[widgetId];
-    return state is bool ? state : false;
-  }
-
-  int getIntState(String widgetId) {
-    final state = _states[widgetId];
-    return state is int ? state : 0;
-  }*/
-
-  // Si el estado es un mapa, se podría usar para manejar configuraciones complejas
-  /*Map<String, dynamic> getMapState(String widgetId) {
-    final state = _states[widgetId];
-    return state is Map<String, dynamic> ? Map<String, dynamic>.from(state) : {};
-  }*/
-
-  // Método que genera datos de prueba para simular la actualización del estado
-
 
   void generateTestData(String widgetId) {
     int counter = 1;
@@ -77,6 +50,4 @@ class WidgetStateNotifier with ChangeNotifier {
     });
   }
 
-
-// Puedes agregar más funciones para manejar otros tipos de estado si es necesario
 }

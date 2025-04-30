@@ -5,7 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:frontend/comm/rust_launcher.dart';
 import 'package:frontend/widget_factory.dart';
-import 'package:frontend/widgets/app_builder.dart';
+import 'package:frontend/widgets/material_app_builder.dart';
+import 'package:frontend/widgets/material_appbar_builder.dart';
+import 'package:frontend/widgets/material_drawer_builder.dart';
+import 'package:frontend/widgets/material_iconbutton.dart';
+import 'package:frontend/widgets/material_scaffold_builder.dart';
+import 'package:frontend/widgets/multiplatform_container_builder.dart';
+import 'package:frontend/widgets/multiplatform_icon_builder.dart';
+import 'package:frontend/widgets/multiplatform_row_builder.dart';
+import 'package:frontend/widgets/multiplatform_text_builder.dart';
 import 'package:frontend/widgets/widget_state_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +21,17 @@ import 'comm/sender.dart';
 import 'comm/sender_impl.dart';
 
 void main() {
-  AppBuilder.register();
+  MaterialAppBuilder.register();
+  MaterialScaffoldBuilder.register();
+  MaterialAppBarBuilder.register();
+  MaterialDrawerBuilder.register();
+
+  MultiplatformTextBuilder.register();
+  MultiplatformContainerBuilder.register();
+  MultiplatformRowBuilder.register();
+
+  IconButtonBuilder.register();
+  MultiplatformIconBuilder.register();
 
   launchRust();
   Isolate.spawn((_) {
@@ -26,47 +44,9 @@ void main() {
     });
   }, null);
 
-  // JSON con la estructura de PlatformApp
   Map<String, dynamic> json = {
-    "type": "app",
     "id": "app_01",
-    "children": [
-      {
-        "path": "/",
-        "type": "scaffold",
-        "id": "scaffold_1",
-        "styles": {
-          "backgroundColor": "#FFFFFF",
-        },
-        "properties": {},
-        "children": [
-          {
-            "type": "appBar",
-            "title": {"type": "text", "data": "Mi AppBar Plataforma"},
-          },
-          /*{
-            "type": "BottomNavBar",
-          },
-          {
-            "type": "Container"
-          },*/
-          {
-            "type": "drawer",
-            "id": "mi_drawer",
-            "styles": {"backgroundColor": "#FF0000"},
-            "properties": {"width": 350}, // Ancho opcional
-            "children": [
-              {"type": "text", "data": "Opción Drawer 1"},
-              {"type": "text", "data": "Opción Drawer 2"}
-            ]
-          },
-        ]
-      },
-      /*{
-        "path": "/inicio",
-        "type": "Scaffold",
-      }*/
-    ],
+    "type": "material.app",
     "styles": {"color": "#FF0000"},
     "properties": {
       "title": "Mi Super App",
@@ -79,9 +59,95 @@ void main() {
       "checkerboardOffscreenLayers": false,
       "showSemanticsDebugger": false,
       "restorationScopeId": "restoScope123",
-      "material": false,
-      "cupertino": true
-    }
+    },
+    "children": [
+      {
+        "id": "scaffold_1",
+        "route": "/",
+        "type": "material.scaffold",
+        "styles": {
+          "backgroundColor": "#FFFFFF",
+        },
+        "properties": {},
+        "children": [
+          {
+            "type": "material.appBar",
+            "children": [
+              {
+                "id": "appbar.title.id",
+                "type": "multiplatform.text",
+                "slot": "material.appBar.title",
+                "data": "Opción Drawer 1",
+              },
+              {
+                "slot": "material.appBar.actions",
+                "id": "add_button",
+                "type": "material.iconbutton",
+                "properties": {
+                  "tooltip": "Añadir elemento",
+                  "iconSize": 28.0
+                },
+                "events": {
+                  "onPressed": {
+                    "action": "addItem",
+                    "message": "user_wants_to_add"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "multiplatform.icon",
+                    "properties": {
+                      "icon": "add"
+                    }
+                  }
+                ]
+              },
+              {
+                "slot": "material.appBar.actions",
+                "id": "delete_button",
+                "type": "material.iconbutton",
+                "properties": {
+                  "tooltip": "Eliminar elemento",
+                  "iconSize": 28.0
+                },
+                "events": {
+                  "onPressed": {
+                    "action": "deleteItem",
+                    "message": "user_wants_to_delete"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "multiplatform.icon",
+                    "properties": {
+                      "icon": "delete"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          /*{
+            "type": "BottomNavBar",
+          },*/
+          {
+            "type": "multiplatform.container",
+            "styles": {
+              "backgroundColor": "#008000",
+            },
+          },
+          {
+            "type": "material.drawer",
+            "id": "mi_drawer",
+            "styles": {"backgroundColor": "#FF0000"},
+            "children": [
+              {"type": "multiplatform.text", "data": "Opción Drawer 1"},
+              {"type": "multiplatform.text", "data": "Opción Drawer 2"}
+            ]
+          },
+        ]
+      }
+    ]
   };
 
   runApp(
