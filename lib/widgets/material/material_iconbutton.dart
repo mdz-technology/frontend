@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/utils.dart';
 
-import '../comm/sender.dart';
-import '../comm/sender_impl.dart';
-import '../widget_factory.dart';
+import '../../comm/sender.dart';
+import '../../comm/sender_impl.dart';
+import '../../widget_factory.dart';
 
 class IconButtonBuilder {
 
@@ -82,6 +82,7 @@ class IconButtonBuilder {
 
           if (targetWidgetId == '{id}' && id != null) targetWidgetId = id;
 
+          final String stringToSend = message ?? action ?? "";
           final Map<String, dynamic> payload = {
             if (action != null) 'action': action,
             if (message != null) 'message': message,
@@ -91,7 +92,7 @@ class IconButtonBuilder {
           };
           if (payload.containsKey('action')) {
             print('Sending event: $payload');
-            sender.send(payload['message']);
+            sender.send(stringToSend);
           } else {
             print('Warning: onPressed event for widget $id has no action defined.');
           }

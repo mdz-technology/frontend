@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/utils.dart';
-import '../widget_factory.dart';
+import '../../widget_factory.dart';
 
 class MultiplatformRowBuilder {
 

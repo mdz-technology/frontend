@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:frontend/widget_factory.dart';
-import 'package:frontend/widgets/material_appbar_builder.dart';
-import 'package:frontend/widgets/material_drawer_builder.dart';
+import 'package:frontend/widgets/material/material_appbar_builder.dart';
+import 'package:frontend/widgets/material/material_drawer_builder.dart';
 import 'package:frontend/widgets/utils.dart';
 
-// TODO: ButtonNavBar, FloatingActionButton, BottomSheet, PersistentFooterButtons, endDrawer, onDrawerChanged, onEndDrawerChanged
+// TODO: BottonNavBar, FloatingActionButton, BottomSheet, PersistentFooterButtons, endDrawer, onDrawerChanged, onEndDrawerChanged
 class MaterialScaffoldBuilder {
 
   static const String typeName = 'material.scaffold';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/utils.dart';
-import '../widget_factory.dart';
+import '../../widget_factory.dart';
 
 class MultiplatformIconBuilder {
 
@@ -110,7 +110,8 @@ class MultiplatformIconBuilder {
       case 'grid_view': return Icons.grid_view;
       case 'apps': return Icons.apps;
       case 'logout': return Icons.logout;
-
+      case 'clear': return Icons.clear;
+      case 'shopping_bag': return Icons.shopping_bag;
 
       default:
         print("Warning: IconData para '$iconName' no mapeado en _parseIconData.");

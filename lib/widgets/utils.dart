@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
+import '../widget_factory.dart';
 
 Color? parseColor(String? hexColor) {
   if (hexColor == null) {
@@ -730,8 +734,19 @@ Size? parseSize(dynamic value) {
 }
 
 BorderSide? parseBorderSide(dynamic value) {
-  print("TODO: Implement parseBorderSide");
-  return null; // Placeholder
+  if (value == null || value is! Map<String, dynamic>) {
+    return null; // O BorderSide.none
+  }
+  final map = value as Map<String, dynamic>;
+  final Color color = parseColor(map['color']) ?? const Color(0xFF000000); // Default negro
+  final double width = parseDouble(map['width']) ?? 1.0; // Default 1.0
+  // TODO: Parsear BorderStyle (solid, none) si es necesario
+  // final BorderStyle style = parseBorderStyle(map['style']) ?? BorderStyle.solid;
+  return BorderSide(
+    color: color,
+    width: width,
+    // style: style,
+  );
 }
 
 OutlinedBorder? parseOutlinedBorder(dynamic value) {
@@ -814,5 +829,372 @@ BlendMode? parseBlendMode(dynamic value) {
     // Si el string no coincide con ningún BlendMode conocido
       print("Warning: Unrecognized BlendMode string '$value'. Falling back to null.");
       return null;
+  }
+}
+
+// --- Parsers para TextField y relacionados ---
+
+/// Parsea un valor JSON a un InputBorder.
+/// Acepta:
+///   - null -> null
+///   - String "none" -> InputBorder.none
+///   - Map: { "type": "outline"|"underline", "color": "#...", "width": ..., "borderRadius": {...}, "gapPadding": ... }
+InputBorder? parseInputBorder(dynamic value) {
+  if (value == null) return null;
+  if (value is String && value.toLowerCase() == 'none') {
+    return InputBorder.none;
+  }
+  if (value is Map<String, dynamic>) {
+    // Extraer tipo, default a 'underline' si no se especifica explícitamente 'outline' o 'none'
+    String type = value['type'] as String? ?? 'underline';
+    // Si se especificó 'none' como tipo en el mapa, también retorna none
+    if (type.toLowerCase() == 'none') {
+      return InputBorder.none;
+    }
+
+    // Parsear propiedades comunes de BorderSide
+    // Usar un color por defecto más visible que el negro puro si no se especifica
+    final Color color = parseColor(value['color']) ?? Colors.grey.shade600;
+    final double width = parseDouble(value['width']) ?? 1.0;
+    final BorderSide borderSide = BorderSide(color: color, width: width);
+
+    // Parsear borderRadius (ya existe en tus utils)
+    // Usar un default razonable para bordes si no se especifica
+    final BorderRadius borderRadius = parseBorderRadius(value['borderRadius']) ??
+        (type == 'outline' ? BorderRadius.circular(4.0) : BorderRadius.zero);
+
+    // Parsear gapPadding específico de OutlineInputBorder
+    final double gapPadding = parseDouble(value['gapPadding']) ?? 4.0;
+
+    switch (type.toLowerCase()) {
+      case 'outline':
+        return OutlineInputBorder(
+          borderSide: borderSide,
+          borderRadius: borderRadius,
+          gapPadding: gapPadding,
+        );
+      case 'underline':
+        return UnderlineInputBorder(
+          borderSide: borderSide,
+          // UnderlineInputBorder también respeta borderRadius (para las esquinas superiores)
+          borderRadius: borderRadius,
+        );
+      default:
+        print("Warning: Tipo de InputBorder no reconocido '$type'. Usando Underline por defecto.");
+        return UnderlineInputBorder(borderSide: borderSide, borderRadius: borderRadius);
+    }
+  }
+  print("Warning: Formato no reconocido para InputBorder: ${value.runtimeType} - $value");
+  return null; // Fallback si el formato no es String ni Map
+}
+
+
+/// Parsea un string al enum TextInputType nullable.
+TextInputType? parseTextInputType(String? type) {
+  if (type == null) return null;
+  switch (type.toLowerCase()) {
+    case 'text': return TextInputType.text;
+    case 'multiline': return TextInputType.multiline;
+    case 'number': return TextInputType.number;
+    case 'phone': return TextInputType.phone;
+    case 'datetime': return TextInputType.datetime;
+    case 'emailaddress':
+    case 'email': return TextInputType.emailAddress;
+    case 'url': return TextInputType.url;
+    case 'visiblepassword': return TextInputType.visiblePassword;
+    case 'name': return TextInputType.name;
+    case 'streetaddress': return TextInputType.streetAddress;
+    case 'none': return TextInputType.none;
+    default:
+      print("Warning: TextInputType no reconocido '$type'.");
+      return null;
+  }
+}
+
+/// Parsea un string al enum TextInputAction nullable.
+TextInputAction? parseTextInputAction(String? action) {
+  if (action == null) return null;
+  switch (action.toLowerCase()) {
+    case 'none': return TextInputAction.none;
+    case 'unspecified': return TextInputAction.unspecified;
+    case 'done': return TextInputAction.done;
+    case 'go': return TextInputAction.go;
+    case 'search': return TextInputAction.search;
+    case 'send': return TextInputAction.send;
+    case 'next': return TextInputAction.next;
+    case 'previous': return TextInputAction.previous;
+    case 'continueaction': return TextInputAction.continueAction;
+    case 'join': return TextInputAction.join;
+    case 'route': return TextInputAction.route;
+    case 'emergencycall': return TextInputAction.emergencyCall;
+    case 'newline': return TextInputAction.newline;
+    default:
+      print("Warning: TextInputAction no reconocido '$action'.");
+      return null;
+  }
+}
+
+/// Parsea un string al enum TextCapitalization nullable.
+TextCapitalization? parseTextCapitalization(String? capitalization) {
+  if (capitalization == null) return null; // TextField usa 'none' como default si es null
+  switch (capitalization.toLowerCase()) {
+    case 'words': return TextCapitalization.words;
+    case 'sentences': return TextCapitalization.sentences;
+    case 'characters': return TextCapitalization.characters;
+    case 'none': return TextCapitalization.none;
+    default:
+      print("Warning: TextCapitalization no reconocido '$capitalization'.");
+      return null;
+  }
+}
+
+/// Parsea un string ("top", "center", "bottom") o un número a TextAlignVertical nullable.
+TextAlignVertical? parseTextAlignVertical(dynamic value) {
+  if (value == null) return null;
+  if (value is String) {
+    switch (value.toLowerCase()) {
+      case 'top': return TextAlignVertical.top;
+      case 'center': return TextAlignVertical.center;
+      case 'bottom': return TextAlignVertical.bottom;
+      default:
+        print("Warning: String para TextAlignVertical no reconocido '$value'.");
+        return null;
+    }
+  }
+  // Permite especificar el factor Y directamente como un número (ej: 0.0 para centro)
+  if (value is num) {
+    return TextAlignVertical(y: value.toDouble());
+  }
+  print("Warning: Tipo no soportado para TextAlignVertical: ${value.runtimeType}");
+  return null;
+}
+
+/// Parsea un string ("enabled", "disabled") al enum SmartDashesType nullable.
+SmartDashesType? parseSmartDashesType(String? type) {
+  if (type == null) return null; // TextField usa un default interno si es null
+  switch (type.toLowerCase()) {
+    case 'disabled': return SmartDashesType.disabled;
+    case 'enabled': return SmartDashesType.enabled;
+    default:
+      print("Warning: SmartDashesType no reconocido '$type'.");
+      return null;
+  }
+}
+
+/// Parsea un string ("enabled", "disabled") al enum SmartQuotesType nullable.
+SmartQuotesType? parseSmartQuotesType(String? type) {
+  if (type == null) return null; // TextField usa un default interno si es null
+  switch (type.toLowerCase()) {
+    case 'disabled': return SmartQuotesType.disabled;
+    case 'enabled': return SmartQuotesType.enabled;
+    default:
+      print("Warning: SmartQuotesType no reconocido '$type'.");
+      return null;
+  }
+}
+
+/// Parsea un string al enum MaxLengthEnforcement nullable.
+MaxLengthEnforcement? parseMaxLengthEnforcement(String? enforcement) {
+  if (enforcement == null) return null; // TextField usa un default interno si es null
+  switch (enforcement.toLowerCase()) {
+    case 'none': return MaxLengthEnforcement.none;
+    case 'enforced': return MaxLengthEnforcement.enforced;
+    case 'truncateaftercompositionends': return MaxLengthEnforcement.truncateAfterCompositionEnds;
+    default:
+      print("Warning: MaxLengthEnforcement no reconocido '$enforcement'.");
+      return null;
+  }
+}
+
+/// Parsea un string ("light", "dark") al enum Brightness nullable.
+Brightness? parseKeyboardAppearance(String? appearance) {
+  if (appearance == null) return null; // Usa el default de la plataforma
+  switch (appearance.toLowerCase()) {
+    case 'light': return Brightness.light;
+    case 'dark': return Brightness.dark;
+    default:
+      print("Warning: KeyboardAppearance no reconocido '$appearance'.");
+      return null;
+  }
+}
+
+/// Parsea un string ("start", "down") al enum DragStartBehavior.
+/// Devuelve DragStartBehavior.start por defecto si el valor es nulo o inválido.
+DragStartBehavior parseDragStartBehavior(String? behavior) {
+  // Default definido en el constructor de TextField es 'start'
+  if (behavior == null) return DragStartBehavior.start;
+  switch (behavior.toLowerCase()) {
+    case 'down': return DragStartBehavior.down;
+    case 'start': return DragStartBehavior.start;
+    default:
+      print("Warning: DragStartBehavior no reconocido '$behavior'. Usando 'start'.");
+      return DragStartBehavior.start;
+  }
+}
+
+/// Parsea un string a una instancia de ScrollPhysics nullable.
+ScrollPhysics? parseScrollPhysics(String? physics) {
+  if (physics == null) return null; // Usa el default de la plataforma
+  switch (physics.toLowerCase()) {
+    case 'never':
+    case 'neverscrollable': return const NeverScrollableScrollPhysics();
+    case 'bouncing': return const BouncingScrollPhysics();
+    case 'clamping': return const ClampingScrollPhysics();
+    case 'fixed':
+    case 'fixedextent': return const FixedExtentScrollPhysics();
+    case 'page': return const PageScrollPhysics();
+  // 'AlwaysScrollableScrollPhysics' es útil si quieres asegurar que se pueda
+  // hacer scroll incluso si el contenido no excede el viewport (requiere un viewport)
+    case 'always':
+    case 'alwaysscrollable': return const AlwaysScrollableScrollPhysics();
+    default:
+      print("Warning: ScrollPhysics no reconocido '$physics'. Usando default de plataforma.");
+      return null;
+  }
+}
+
+InputDecoration? parseInputDecoration(
+    Map<String, dynamic>? jsonDecoration,
+    BuildContext context,
+    Map<String, dynamic>? params,
+    ) {
+  if (jsonDecoration == null) return null;
+
+  Widget? parseIcon(String key) {
+    final iconJson = jsonDecoration[key];
+    if (iconJson != null && iconJson is Map<String, dynamic>) {
+      try {
+        return WidgetFactory.buildWidgetFromJson(context, iconJson, params);
+      } catch (e) {
+        print("Error building icon '$key' for InputDecoration: $e");
+        return null;
+      }
+    }
+    return null;
+  }
+
+  return InputDecoration(
+    icon: parseIcon('icon'),
+    labelText: parseString(jsonDecoration['labelText']),
+    labelStyle: parseTextStyle(jsonDecoration['labelStyle']),
+    helperText: parseString(jsonDecoration['helperText']),
+    helperStyle: parseTextStyle(jsonDecoration['helperStyle']),
+    helperMaxLines: parseInt(jsonDecoration['helperMaxLines']),
+    hintText: parseString(jsonDecoration['hintText']),
+    hintStyle: parseTextStyle(jsonDecoration['hintStyle']),
+    hintTextDirection: parseTextDirection(jsonDecoration['hintTextDirection']),
+    hintMaxLines: parseInt(jsonDecoration['hintMaxLines']),
+    errorText: parseString(jsonDecoration['errorText']),
+    errorStyle: parseTextStyle(jsonDecoration['errorStyle']),
+    errorMaxLines: parseInt(jsonDecoration['errorMaxLines']),
+    floatingLabelStyle: parseTextStyle(jsonDecoration['floatingLabelStyle']),
+    isCollapsed: parseBool(jsonDecoration['isCollapsed']) ?? false,
+    isDense: parseBool(jsonDecoration['isDense']),
+    contentPadding: parseEdgeInsets(jsonDecoration['contentPadding']),
+    prefixIcon: parseIcon('prefixIcon'),
+    prefixIconConstraints: parseBoxConstraints(jsonDecoration['prefixIconConstraints']),
+    prefix: parseIcon('prefix'),
+    prefixText: parseString(jsonDecoration['prefixText']),
+    prefixStyle: parseTextStyle(jsonDecoration['prefixStyle']),
+    prefixIconColor: parseColor(jsonDecoration['prefixIconColor']),
+    suffixIcon: parseIcon('suffixIcon'),
+    suffix: parseIcon('suffix'),
+    suffixText: parseString(jsonDecoration['suffixText']),
+    suffixStyle: parseTextStyle(jsonDecoration['suffixStyle']),
+    suffixIconColor: parseColor(jsonDecoration['suffixIconColor']),
+    suffixIconConstraints: parseBoxConstraints(jsonDecoration['suffixIconConstraints']),
+    counter: parseIcon('counter'),
+    counterText: parseString(jsonDecoration['counterText']),
+    counterStyle: parseTextStyle(jsonDecoration['counterStyle']),
+    filled: parseBool(jsonDecoration['filled']),
+    fillColor: parseColor(jsonDecoration['fillColor']),
+    focusColor: parseColor(jsonDecoration['focusColor']),
+    hoverColor: parseColor(jsonDecoration['hoverColor']),
+    errorBorder: parseInputBorder(jsonDecoration['errorBorder']),
+    focusedBorder: parseInputBorder(jsonDecoration['focusedBorder']),
+    focusedErrorBorder: parseInputBorder(jsonDecoration['focusedErrorBorder']),
+    disabledBorder: parseInputBorder(jsonDecoration['disabledBorder']),
+    enabledBorder: parseInputBorder(jsonDecoration['enabledBorder']),
+    border: parseInputBorder(jsonDecoration['border']),
+    enabled: parseBool(jsonDecoration['enabled']) ?? true,
+    semanticCounterText: parseString(jsonDecoration['semanticCounterText']),
+    alignLabelWithHint: parseBool(jsonDecoration['alignLabelWithHint']),
+    constraints: parseBoxConstraints(jsonDecoration['constraints']),
+  );
+}
+
+ListTileStyle? parseListTileStyle(String? style) {
+  if (style == null) return null;
+  switch (style.toLowerCase()) {
+    case 'list': return ListTileStyle.list;
+    case 'drawer': return ListTileStyle.drawer;
+    default:
+      print("Warning: ListTileStyle no reconocido '$style'.");
+      return null; // O un default como ListTileStyle.list
+  }
+}
+
+/// Parsea un string ("top", "center", "bottom") al enum ListTileTitleAlignment nullable.
+ListTileTitleAlignment? parseListTileTitleAlignment(String? alignment) {
+  if (alignment == null) return null;
+  switch (alignment.toLowerCase()) {
+    case 'top': return ListTileTitleAlignment.top;
+    case 'center': return ListTileTitleAlignment.center;
+    case 'bottom': return ListTileTitleAlignment.bottom;
+  // case 'threeLine': return ListTileTitleAlignment.threeLine; // Si se necesita
+  // case 'adaptive': return ListTileTitleAlignment.adaptive; // Si se necesita
+    default:
+      print("Warning: ListTileTitleAlignment no reconocido '$alignment'.");
+      return null;
+  }
+}
+
+ShapeBorder? parseShapeBorder(dynamic value) {
+  if (value == null || value is! Map<String, dynamic>) {
+    return null;
+  }
+  final Map<String, dynamic> map = value;
+  final String? type = map['type'] as String?;
+  // Parsear BorderSide si se proporciona (puede ser null)
+  // Necesita parseBorderSide en utils.dart
+  final BorderSide? side = parseBorderSide(map['side']);
+
+  // Parsear BorderRadius si se proporciona (puede ser null)
+  // parseBorderRadius ya debería existir en tus utils
+  final BorderRadiusGeometry? borderRadius = parseBorderRadius(map['borderRadius']);
+
+
+  switch (type?.toLowerCase()) {
+    case 'roundedrectangle':
+    case 'rounded': // Alias
+      return RoundedRectangleBorder(
+        borderRadius: borderRadius ?? BorderRadius.zero, // Default a zero si no se especifica
+        side: side ?? BorderSide.none, // Default a none si no se especifica
+      );
+    case 'stadium':
+      return StadiumBorder(
+        side: side ?? BorderSide.none,
+      );
+    case 'circle':
+    // TODO: CircleBorder tiene un parámetro 'eccentricity' que podría parsearse si es necesario
+      return CircleBorder(
+        side: side ?? BorderSide.none,
+      );
+    case 'beveledrectangle':
+    case 'beveled': // Alias
+      return BeveledRectangleBorder(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        side: side ?? BorderSide.none,
+      );
+    case 'continuousrectangle':
+    case 'continuous': // Alias
+      return ContinuousRectangleBorder(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        side: side ?? BorderSide.none,
+      );
+  // Podrías añadir 'linearBorder', 'starBorder' si fueran necesarios
+    default:
+      print("Warning: Tipo de ShapeBorder no reconocido '$type'.");
+      return null; // O devolver un default como RoundedRectangleBorder()
   }
 }
