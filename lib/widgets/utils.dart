@@ -1198,3 +1198,41 @@ ShapeBorder? parseShapeBorder(dynamic value) {
       return null; // O devolver un default como RoundedRectangleBorder()
   }
 }
+
+/// Parsea un string ("horizontal", "vertical") a un enum Axis.
+Axis? parseAxis(String? axis) {
+  if (axis == null) return null; // Default es vertical en ListView
+  switch (axis.toLowerCase()) {
+    case 'horizontal': return Axis.horizontal;
+    case 'vertical': return Axis.vertical;
+    default:
+      print("Warning: Axis no reconocido '$axis'. Usando vertical.");
+      return Axis.vertical;
+  }
+}
+
+/// Parsea un string ("manual", "onDrag") a ScrollViewKeyboardDismissBehavior.
+ScrollViewKeyboardDismissBehavior? parseScrollViewKeyboardDismissBehavior(String? behavior) {
+  if (behavior == null) return null; // Default es manual
+  switch (behavior.toLowerCase()) {
+    case 'manual': return ScrollViewKeyboardDismissBehavior.manual;
+    case 'ondrag': return ScrollViewKeyboardDismissBehavior.onDrag;
+    default:
+      print("Warning: ScrollViewKeyboardDismissBehavior no reconocido '$behavior'. Usando manual.");
+      return ScrollViewKeyboardDismissBehavior.manual;
+  }
+}
+
+/// Parsea un string ("opaque", "translucent", "deferToChild") a HitTestBehavior.
+HitTestBehavior? parseHitTestBehavior(String? behavior) {
+  if (behavior == null) return null; // Default suele ser opaque para áreas clickeables
+  switch (behavior.toLowerCase()) {
+    case 'opaque': return HitTestBehavior.opaque;
+    case 'translucent': return HitTestBehavior.translucent;
+    case 'defertochild':
+    case 'defer': return HitTestBehavior.deferToChild;
+    default:
+      print("Warning: HitTestBehavior no reconocido '$behavior'.");
+      return null;
+  }
+}

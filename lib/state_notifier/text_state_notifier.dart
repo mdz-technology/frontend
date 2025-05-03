@@ -3,14 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-
 class TextStateNotifier with ChangeNotifier {
 
   final Map<String, TextEditingController> _controllers = {};
 
   TextEditingController getOrCreateController(String widgetId, {String? initialValue}) {
+
     if (_controllers.containsKey(widgetId)) {
-      print("✔️ Reusing existing TextEditingController for $widgetId");
       return _controllers[widgetId]!;
     }
     final String textToUse = initialValue ?? '';
@@ -30,7 +29,7 @@ class TextStateNotifier with ChangeNotifier {
         );
       }
     } else {
-      print("⚠️ Controller $widgetId not found during updateControllerText (value: '$newText'). Update ignored. Initial value will be set on creation.");
+      print("[TextStateNotifier] Controller $widgetId not found during updateControllerText (value: '$newText'). Update ignored. Initial value will be set on creation.");
     }
   }
 
@@ -39,7 +38,7 @@ class TextStateNotifier with ChangeNotifier {
       try {
         _controllers[widgetId]?.dispose();
       } catch (e) {
-        print("Error disposing controller for $widgetId: $e");
+        print("[TextStateNotifier] Error disposing controller for $widgetId: $e");
       }
       _controllers.remove(widgetId);
     }
@@ -51,7 +50,7 @@ class TextStateNotifier with ChangeNotifier {
       try {
         controller.dispose();
       } catch (e) {
-        print("Error disposing controller during notifier dispose: $e");
+        print("[TextStateNotifier] Error disposing controller during notifier dispose: $e");
       }
     });
     _controllers.clear();

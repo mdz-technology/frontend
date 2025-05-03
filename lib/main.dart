@@ -253,7 +253,6 @@ void main() {
                     "type": "material.listview",
                     "properties": {
                       "shrinkWrap": true
-                      // O true si está dentro de otra columna/lista
                     },
                     "styles": {
                       "padding": {"vertical": 10.0, "horizontal": 8.0},
@@ -262,12 +261,11 @@ void main() {
                     "children": [
                       {
                         "id": "item_1",
-                        "type": "material.card", // Asumiendo un CardBuilder
+                        "type": "material.card",
                         "children": [
                           {
                             "id": "item_1_content",
                             "type": "material.listtile",
-                            // Asumiendo un ListTileBuilder
                             "properties": {
                               "leading": {
                                 "type": "multiplatform.icon",
@@ -321,7 +319,6 @@ void main() {
                           }
                         ]
                       }
-                      // ... más elementos de la lista
                     ]
                   }
                 ]
