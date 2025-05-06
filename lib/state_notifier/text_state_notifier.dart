@@ -1,6 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class TextStateNotifier with ChangeNotifier {
@@ -8,7 +5,6 @@ class TextStateNotifier with ChangeNotifier {
   final Map<String, TextEditingController> _controllers = {};
 
   TextEditingController getOrCreateController(String widgetId, {String? initialValue}) {
-
     if (_controllers.containsKey(widgetId)) {
       return _controllers[widgetId]!;
     }

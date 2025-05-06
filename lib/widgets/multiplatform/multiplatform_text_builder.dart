@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 import 'package:frontend/widgets/utils.dart';
+import 'package:provider/provider.dart';
+
+import '../../state_notifier/widget_state_notifier.dart';
 
 class MultiplatformTextBuilder {
 
@@ -16,9 +19,29 @@ class MultiplatformTextBuilder {
   static Widget buildWithParams(BuildContext context,
       Map<String, dynamic> json,
       [ Map<String, dynamic>? params]) {
-    final String data = json['data']?.toString() ?? 'Texto por defecto';
-    final Map<String, dynamic> styleJson = Map<String, dynamic>.from(json['style'] as Map? ?? {});
+    final String? id = json['id']?.toString();
 
+    final notifier = context.watch<WidgetStateNotifier>();
+
+    final String dataFromJson = json['data']?.toString() ?? 'Texto por defecto';
+
+    String? stateData;
+    if (id != null && id.isNotEmpty) {
+      try {
+        final dynamic rawState = notifier.getState(id);
+        if (rawState is String) {
+          stateData = rawState;
+        } else if (rawState != null) {
+          print("[TextBuilder] State for widget '$id' exists but is not a String (${rawState.runtimeType}). Using JSON data.");
+        }
+      } catch (e) {
+        print(" Error accessing state for Text widget '$id': $e. Using JSON data.");
+      }
+    }
+
+    final String actualData = stateData ?? dataFromJson;
+
+    final Map<String, dynamic> styleJson = Map<String, dynamic>.from(json['style'] as Map? ?? {});
     final TextStyle textStyle = _buildTextStyle(styleJson);
 
     final TextAlign textAlign = parseTextAlign(json['textAlign']?.toString());
@@ -34,8 +57,8 @@ class MultiplatformTextBuilder {
     final Color? selectionColor = parseColor(json['selectionColor']?.toString());
 
     return Text(
-      data,
-      key: json.containsKey('id') ? Key(json['id'].toString()) : null,
+      actualData,
+      key: id != null ? Key(id) : null,
       textAlign: textAlign,
       overflow: textOverflow,
       maxLines: maxLines,

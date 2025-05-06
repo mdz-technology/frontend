@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/widgets/utils.dart';
 import 'package:provider/provider.dart';
 import '../../comm/sender.dart';
@@ -72,6 +73,7 @@ class MaterialListTileBuilder {
           'eventType': 'onTap',
           if (eventConfig.containsKey('message')) 'message': eventConfig['message'],
         };
+        testino(context);
         print('Sending event: $payload');
         sender.send(payload['action']);
       }

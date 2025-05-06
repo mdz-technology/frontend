@@ -1236,3 +1236,18 @@ HitTestBehavior? parseHitTestBehavior(String? behavior) {
       return null;
   }
 }
+
+FlexFit? parseFlexFit(dynamic value) {
+  if (value == null || value is! String) {
+    return null; // Devuelve null si no es un string válido
+  }
+  switch (value.toLowerCase()) {
+    case 'tight':
+      return FlexFit.tight;
+    case 'loose':
+      return FlexFit.loose;
+    default:
+      print("Warning: FlexFit no reconocido '$value'.");
+      return null; // Devuelve null si el string no es válido
+  }
+}

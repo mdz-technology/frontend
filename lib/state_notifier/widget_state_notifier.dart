@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart'; // Para ChangeNotifier
+import 'package:flutter/foundation.dart';
 
 class WidgetStateNotifier with ChangeNotifier {
 
@@ -30,7 +30,7 @@ class WidgetStateNotifier with ChangeNotifier {
   @override
   void dispose() {
     print("[Notifier] Dispose WidgetStateNotifier (Simple Version)");
-    _states.clear(); // Simplemente limpia el mapa
-    super.dispose(); // Llama al dispose de ChangeNotifier
+    _states.clear();
+    super.dispose();
   }
 }

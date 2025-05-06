@@ -30,6 +30,12 @@ import 'package:provider/provider.dart';
 import 'comm/sender.dart';
 import 'comm/sender_impl.dart';
 
+void testino(BuildContext context) {
+  print("Test function called");
+  final notifier = context.read<WidgetStateNotifier>();
+  notifier.updateState('abc123', DateTime.now().toString());
+}
+
 void main() {
   MaterialAppBuilder.register();
   MaterialScaffoldBuilder.register();
@@ -241,7 +247,7 @@ void main() {
             "id": "mi_drawer",
             "styles": {"backgroundColor": "#FF0000"},
             "children": [
-              {"type": "multiplatform.text", "data": "Opción Drawer 1"},
+              {"id":"abc123","type": "multiplatform.text", "data": "Opción Drawer 1"},
               {"type": "multiplatform.text", "data": "Opción Drawer 2"},
               {
                 "type": "multiplatform.container", // O multiplatform.column
@@ -332,7 +338,7 @@ void main() {
 
   runApp(
     PlatformProvider(
-      initialPlatform: TargetPlatform.iOS,
+      initialPlatform: TargetPlatform.linux,
       builder: (context) => MultiProvider(
         providers: [
           ChangeNotifierProvider<TextStateNotifier>(
