@@ -112,6 +112,8 @@ class MultiplatformIconBuilder {
       case 'logout': return Icons.logout;
       case 'clear': return Icons.clear;
       case 'shopping_bag': return Icons.shopping_bag;
+      case 'article': return Icons.article;
+      case 'view_agenda': return Icons.view_agenda;
 
       default:
         print("Warning: IconData para '$iconName' no mapeado en _parseIconData.");

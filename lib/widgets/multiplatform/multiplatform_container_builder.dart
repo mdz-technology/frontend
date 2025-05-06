@@ -7,11 +7,6 @@ import '../../widget_factory.dart';
 
 class MultiplatformContainerBuilder {
 
-  static late String id;
-  static late Map<String, dynamic> styles;
-  static late Map<String, dynamic> properties;
-  static late Map<String, dynamic> events;
-  static late List<dynamic> children;
 
   static const String typeName = 'multiplatform.container';
 
@@ -23,33 +18,46 @@ class MultiplatformContainerBuilder {
       Map<String, dynamic> json,
       [Map<String, dynamic>? params]) {
 
-    _loadFromJson(json);
+    final String? localId = json['id']?.toString();
+    final Map<String, dynamic> localStyles = Map<String, dynamic>.from(json['styles'] as Map? ?? {});
+    final Map<String, dynamic> localProperties = Map<String, dynamic>.from(json['properties'] as Map? ?? {});
+    final List<dynamic> localChildren = json['children'] as List<dynamic>? ?? [];
 
-    final Key? key = id != null ? Key(id) : null;
+    final Key? key = (localId != null && localId.isNotEmpty) ? Key(localId) : null;
 
-    final AlignmentGeometry? alignment = parseAlignment(styles['alignment']);
-    final EdgeInsetsGeometry? padding = parseEdgeInsets(styles['padding']);
-    final Color? color = parseColor(styles['backgroundColor']); // Mapeo de 'backgroundColor'
-    final Decoration? decoration = parseDecoration(styles['decoration']);
-    final double? width = parseDouble(styles['width']);
-    final double? height = parseDouble(styles['height']);
-    final EdgeInsetsGeometry? margin = parseEdgeInsets(styles['margin']);
+    final AlignmentGeometry? alignment = parseAlignment(localStyles['alignment']?.toString());
+    final EdgeInsetsGeometry? padding = parseEdgeInsets(localStyles['padding']);
+    final Color? color = parseColor(localStyles['backgroundColor']?.toString());
+    final Decoration? decoration = parseDecoration(localStyles['decoration'] as Map<String, dynamic>?);
+    final double? width = parseDouble(localStyles['width']);
+    final double? height = parseDouble(localStyles['height']);
+    final EdgeInsetsGeometry? margin = parseEdgeInsets(localStyles['margin']);
 
-    final BoxConstraints? constraints = parseBoxConstraints(properties['constraints']);
-    final Matrix4? transform = parseTransform(properties['transform']);
-    final AlignmentGeometry? transformAlignment = parseAlignment(properties['transformAlignment']);
-    final Clip clipBehavior = parseClipBehavior(properties['clipBehavior']) ?? Clip.none; // Default de Flutter
+    final BoxConstraints? constraints = parseBoxConstraints(localProperties['constraints']);
+    final Matrix4? transform = parseTransform(localProperties['transform']);
+    final AlignmentGeometry? transformAlignment = parseAlignment(localProperties['transformAlignment']?.toString());
+    final Clip clipBehavior = parseClipBehavior(localProperties['clipBehavior']) ?? Clip.none;
 
     Widget? childWidget;
-    if (children.isNotEmpty && children.first is Map<String, dynamic>) {
-      childWidget = WidgetFactory.buildWidgetFromJson(
-        context,
-        children.first as Map<String, dynamic>,
-        params,
-      );
+    if (localChildren.isNotEmpty) {
+      final firstChildJson = localChildren.first;
+      if (firstChildJson is Map<String, dynamic>) {
+        try {
+          childWidget = WidgetFactory.buildWidgetFromJson(
+            context,
+            firstChildJson,
+            params,
+          );
+        } catch (e) {
+          print("Error building child for Container (id: $localId): $e. Child JSON: $firstChildJson");
+          childWidget = const SizedBox.shrink(key: ValueKey('error_child_container'));
+        }
+      } else if (firstChildJson != null) {
+        print("Warning: Child for Container (id: $localId) is not a valid Map. Child: $firstChildJson");
+      }
     }
 
-    final container = Container(
+    return Container(
       key: key,
       alignment: alignment,
       padding: padding,
@@ -64,15 +72,5 @@ class MultiplatformContainerBuilder {
       clipBehavior: clipBehavior,
       child: childWidget,
     );
-    return container;
   }
-
-  static _loadFromJson(Map<String, dynamic> json) {
-    id = json['id'] as String? ?? '';
-    styles = json['styles'] as Map<String, dynamic>? ?? {};
-    properties = json['properties'] as Map<String, dynamic>? ?? {};
-    events = json['events'] as Map<String, dynamic>? ?? {};
-    children = json['children'] as List<dynamic>? ?? [];
-  }
-
 }

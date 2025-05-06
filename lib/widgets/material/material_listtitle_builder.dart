@@ -4,6 +4,7 @@ import 'package:frontend/widgets/utils.dart';
 import 'package:provider/provider.dart';
 import '../../comm/sender.dart';
 import '../../comm/sender_impl.dart';
+import '../../state_notifier/navigator_state_notifier.dart';
 import '../../widget_factory.dart';
 import '../../state_notifier/focusnode_state_notifier.dart';
 
@@ -31,6 +32,19 @@ class MaterialListTileBuilder {
     final Widget? subtitleWidget = _buildWidgetSlot(context, properties['subtitle'], params);
     final Widget? trailingWidget = _buildWidgetSlot(context, properties['trailing'], params);
 
+    FocusNode? focusNode;
+
+    if (id != null && id.isNotEmpty) {
+      try {
+        final focusStatenotifier = context.read<FocusNodeStateNotifier>();
+        focusNode = focusStatenotifier.getOrCreateNode(id); // Ya no se usa 'id!'
+      } catch (e) {
+        print("Advertencia: No se pudo obtener FocusNodeStateNotifier o FocusNode para ListTile '$id'. Error: $e");
+        focusNode;
+      }
+    }
+    final bool autofocus = parseBool(properties['autofocus']) ?? false;
+
     final bool isThreeLine = parseBool(properties['isThreeLine']) ?? false;
     final bool? dense = parseBool(properties['dense']);
     final VisualDensity? visualDensity = parseVisualDensity(styles['visualDensity']);
@@ -50,8 +64,6 @@ class MaterialListTileBuilder {
     final Color? hoverColor = parseColor(styles['hoverColor']);
     final Color? splashColor = parseColor(styles['splashColor']);
     final focusStatenotifier = context.read<FocusNodeStateNotifier>();
-    final FocusNode? focusNode = focusStatenotifier.getOrCreateNode(id!);
-    final bool autofocus = parseBool(properties['autofocus']) ?? false;
     final Color? tileColor = parseColor(styles['tileColor']);
     final Color? selectedTileColor = parseColor(styles['selectedTileColor']);
     final bool? enableFeedback = parseBool(properties['enableFeedback']);
@@ -66,7 +78,45 @@ class MaterialListTileBuilder {
     VoidCallback? onTapCallback = events.containsKey('onTap') ? () {
       final eventConfig = events['onTap'] as Map<String, dynamic>? ?? {};
       final String? action = eventConfig['action'] as String?;
-      if (action != null) {
+      if (action == 'navigate') { // Navegación principal (MaterialApp)
+        final String? routeName = eventConfig['route'] as String?;
+        if (routeName != null) {
+          // ... (código anterior para Navigator.pushReplacementNamed, etc.) ...
+          Navigator.pushReplacementNamed(context, routeName);
+        }
+      } else if (action == 'nested_navigate') { // ¡NUEVO! Navegación interna
+        final String? navigatorId = eventConfig['navigatorId'] as String?; // ID del Navigator anidado
+        final String? nestedRouteName = eventConfig['nestedRoute'] as String?; // Ruta DENTRO del anidado
+        final dynamic arguments = eventConfig['arguments']; // Argumentos opcionales
+
+        if (navigatorId != null && nestedRouteName != null) {
+          try {
+            // Obtener el notifier de navigators
+            final navigatorNotifier = context.read<NavigatorStateNotifier>();
+            // Llamar al método del notifier para navegar en el navigator específico
+            print("[Event] Triggering nested navigation: Navigator='$navigatorId', Route='$nestedRouteName'");
+            navigatorNotifier.pushNamed(navigatorId, nestedRouteName, arguments: arguments);
+          } catch (e) {
+            print("Error obtaining NavigatorStateNotifier or pushing nested route: $e");
+          }
+        } else {
+          print("Error: Action 'nested_navigate' requires 'navigatorId' and 'nestedRoute'. Event: $eventConfig");
+        }
+      } else if (action == 'nested_pop') { // ¡NUEVO! Para volver atrás internamente
+        final String? navigatorId = eventConfig['navigatorId'] as String?;
+        if (navigatorId != null) {
+          try {
+            final navigatorNotifier = context.read<NavigatorStateNotifier>();
+            print("[Event] Triggering nested pop: Navigator='$navigatorId'");
+            navigatorNotifier.pop(navigatorId);
+          } catch (e) {
+            print("Error obtaining NavigatorStateNotifier or popping nested route: $e");
+          }
+        } else {
+          print("Error: Action 'nested_pop' requires 'navigatorId'. Event: $eventConfig");
+        }
+
+      } else if (action != null) {
         final payload = {
           'action': action,
           'widgetId': id,

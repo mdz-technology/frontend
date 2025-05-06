@@ -39,6 +39,17 @@ class MultiplatformColumnBuilder {
       }
     }).toList();
 
+    print("--- Debugging Children Keys for Column: ${json['id']} ---");
+    for (int i = 0; i < childrenWidgets.length; i++) {
+      Widget childWidget = childrenWidgets[i];
+      Map<String, dynamic> childJson = {};
+      if (i < childJson.length && childJson[i] is Map<String, dynamic>) {
+        childJson = childJson[i] as Map<String, dynamic>;
+      }
+      print("Child $i: Type='${childJson['type']}', JSON ID='${childJson['id']}', Widget Key='${childWidget.key}'");
+    }
+    print("--- End Debugging Children Keys ---");
+
     return Column(
       key: key,
       mainAxisAlignment: mainAxisAlignment,

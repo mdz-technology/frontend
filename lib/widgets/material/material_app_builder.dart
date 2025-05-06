@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:frontend/widget_factory.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import '../utils.dart';

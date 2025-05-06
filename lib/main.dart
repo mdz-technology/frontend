@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:frontend/comm/rust_launcher.dart';
+import 'package:frontend/state_notifier/navigator_state_notifier.dart';
 import 'package:frontend/state_notifier/scroll_state_notifier.dart';
 import 'package:frontend/state_notifier/text_state_notifier.dart';
 import 'package:frontend/state_notifier/widget_state_notifier.dart';
@@ -23,6 +24,7 @@ import 'package:frontend/widgets/multiplatform/multiplatform_container_builder.d
 import 'package:frontend/widgets/multiplatform/multiplatform_expanded_builder.dart';
 import 'package:frontend/widgets/multiplatform/multiplatform_flexible_builder.dart';
 import 'package:frontend/widgets/multiplatform/multiplatform_icon_builder.dart';
+import 'package:frontend/widgets/material/material_navigator_builder.dart';
 import 'package:frontend/widgets/multiplatform/multiplatform_row_builder.dart';
 import 'package:frontend/widgets/multiplatform/multiplatform_text_builder.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +56,8 @@ void main() {
   MultiplatformFlexibleBuilder.register();
   MaterialCardBuilder.register();
   MaterialListTileBuilder.register();
-
+  MaterialNavigatorBuilder.register();
+  
   launchRust();
   Isolate.spawn((_) {
     int counter = 1;
@@ -67,270 +70,192 @@ void main() {
   }, null);
 
   Map<String, dynamic> json = {
-    "id": "app_01",
+    "id": "mi_aplicacion_principal",
     "type": "material.app",
-    "styles": {"color": "#FF0000"},
     "properties": {
-      "title": "Mi Super App",
+      "title": "App con Navegación Compleja",
       "initialRoute": "/",
-      "locale": "es_ES",
-      "supportedLocales": ["es_ES", "en_US"],
-      "debugShowCheckedModeBanner": false,
-      "showPerformanceOverlay": false,
-      "checkerboardRasterCacheImages": false,
-      "checkerboardOffscreenLayers": false,
-      "showSemanticsDebugger": false,
-      "restorationScopeId": "restoScope123",
+      "debugShowCheckedModeBanner": false
     },
-    "children": [
+    "styles": {
+      "color": "#6200EE" // Color primario de la app
+    },
+    "children": [ // RUTAS PRINCIPALES
+      // --- PANTALLA 1 (Home) ---
       {
-        "id": "scaffold_1",
         "route": "/",
+        "id": "home_screen_scaffold",
         "type": "material.scaffold",
-        "styles": {
-          "backgroundColor": "#FFFFFF",
-        },
-        "properties": {},
         "children": [
           {
             "type": "material.appBar",
-            "children": [
-              {
-                "id": "appbar.title.id",
-                "type": "multiplatform.text",
-                "slot": "material.appBar.title",
-                "data": "Opción Drawer 1",
-              },
-              {
-                "slot": "material.appBar.actions",
-                "id": "add_button",
-                "type": "material.iconbutton",
-                "properties": {"tooltip": "Añadir elemento", "iconSize": 28.0},
-                "events": {
-                  "onPressed": {
-                    "action": "addItem",
-                    "message": "user_wants_to_add"
-                  }
-                },
-                "children": [
-                  {
-                    "type": "multiplatform.icon",
-                    "properties": {"icon": "add"}
-                  }
-                ]
-              },
-              {
-                "slot": "material.appBar.actions",
-                "id": "delete_button",
-                "type": "material.iconbutton",
-                "properties": {
-                  "tooltip": "Eliminar elemento",
-                  "iconSize": 28.0
-                },
-                "events": {
-                  "onPressed": {
-                    "action": "deleteItem",
-                    "message": "user_wants_to_delete"
-                  }
-                },
-                "children": [
-                  {
-                    "type": "multiplatform.icon",
-                    "properties": {"icon": "delete"}
-                  }
-                ]
-              }
-            ]
-          },
-          /*{
-            "type": "BottomNavBar",
-          },*/
-          {
-            "type": "multiplatform.container",
-            //"styles": {
-            //"backgroundColor": "#008000",
-            //},
-            "children": [
-              {
-                "id": "login_email_field",
-                "type": "material.textfield",
-                "properties": {
-                  "initialValue": "",
-                  "keyboardType": "emailAddress",
-                  "textInputAction": "next",
-                  "autocorrect": false,
-                  "enableSuggestions": false,
-                  "autofillHints": ["email", "username"],
-                  "enabled": true,
-                  "maxLines": 1,
-                  "maxLength": 100
-                },
-                "styles": {
-                  "cursorColor": "#1976D2",
-                  "decoration": {
-                    "labelText": "Correo Electrónico",
-                    "hintText": "tu.correo@ejemplo.com",
-                    "helperText": "Ingresa tu correo para iniciar sesión",
-                    "filled": true,
-                    "fillColor": "#F5F5F5",
-                    "prefixIcon": {
-                      "type": "multiplatform.icon",
-                      "properties": {"icon": "email"},
-                      "styles": {"color": "#616161"}
-                    },
-                    "suffixIcon": {
-                      "id": "email_clear_button",
-                      "type": "material.iconbutton",
-                      "properties": {
-                        "tooltip": "Limpiar campo",
-                        "enabled": true
-                      },
-                      "styles": {"padding": 0},
-                      "events": {
-                        "onPressed": {
-                          "action": "clear_field",
-                          "targetWidgetId": "login_email_field"
-                        }
-                      },
-                      "children": [
-                        {
-                          "type": "multiplatform.icon",
-                          "properties": {"icon": "clear"},
-                          "styles": {"size": 20.0, "color": "#9E9E9E"}
-                        }
-                      ]
-                    },
-                    "border": {
-                      "type": "outline",
-                      "color": "#BDBDBD",
-                      "width": 1.0,
-                      "borderRadius": {"all": 8.0}
-                    },
-                    "focusedBorder": {
-                      "type": "outline",
-                      "color": "#1976D2",
-                      "width": 2.0,
-                      "borderRadius": {"all": 8.0}
-                    },
-                    "enabledBorder": {
-                      "type": "outline",
-                      "color": "#BDBDBD",
-                      "width": 1.0,
-                      "borderRadius": {"all": 8.0}
-                    },
-                    "errorBorder": {
-                      "type": "outline",
-                      "color": "#D32F2F",
-                      "width": 1.5,
-                      "borderRadius": {"all": 8.0}
-                    },
-                    "focusedErrorBorder": {
-                      "type": "outline",
-                      "color": "#D32F2F",
-                      "width": 2.0,
-                      "borderRadius": {"all": 8.0}
-                    },
-                    "contentPadding": {"horizontal": 12.0, "vertical": 16.0},
-                    "labelStyle": {"color": "#616161"},
-                    "hintStyle": {"color": "#9E9E9E"}
-                  }
-                },
-                "events": {
-                  "onChanged": {"action": "update_login_email"},
-                  "onSubmitted": {"action": "attempt_login"}
-                }
-              }
-            ]
+            "properties": {
+              "title": { "type": "multiplatform.text", "data": "Pantalla Principal" }
+            }
           },
           {
             "type": "material.drawer",
-            "id": "mi_drawer",
-            "styles": {"backgroundColor": "#FF0000"},
+            "id": "app_drawer_home",
             "children": [
-              {"id":"abc123","type": "multiplatform.text", "data": "Opción Drawer 1"},
-              {"type": "multiplatform.text", "data": "Opción Drawer 2"},
-              {
-                "type": "multiplatform.container", // O multiplatform.column
-                "properties": {"height": 300.0},
-                "styles": {"backgroundColor": "#FFFF00"},
-                "children": [
-                  {
-                    "id": "my_product_list",
-                    "type": "material.listview",
-                    "properties": {
-                      "shrinkWrap": true
-                    },
-                    "styles": {
-                      "padding": {"vertical": 10.0, "horizontal": 8.0},
-                      "physics": "bouncing" // Usa BouncingScrollPhysics
-                    },
-                    "children": [
-                      {
-                        "id": "item_1",
-                        "type": "material.card",
-                        "children": [
-                          {
-                            "id": "item_1_content",
-                            "type": "material.listtile",
-                            "properties": {
-                              "leading": {
-                                "type": "multiplatform.icon",
-                                "properties": {"icon": "shopping_bag"}
-                              },
-                              "title": {
-                                "type": "multiplatform.text",
-                                "data": "Producto Increíble 1"
-                              },
-                              "subtitle": {
-                                "type": "multiplatform.text",
-                                "data": "19.99"
-                              }
-                            },
-                            "events": {
-                              "onTap": {
-                                "action": "view_product",
-                                "productId": "prod_123"
-                              }
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "id": "item_2",
-                        "type": "material.card",
-                        "children": [
-                          {
-                            "id": "item_2_content",
-                            "type": "material.listtile",
-                            "properties": {
-                              "leading": {
-                                "type": "multiplatform.icon",
-                                "properties": {"icon": "star"}
-                              },
-                              "title": {
-                                "type": "multiplatform.text",
-                                "data": "Oferta Especial 2"
-                              },
-                              "subtitle": {
-                                "type": "multiplatform.text",
-                                "data": "9.99 - ¡Solo hoy!"
-                              }
-                            },
-                            "events": {
-                              "onTap": {
-                                "action": "view_product",
-                                "productId": "prod_456"
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
+              { "type": "material.listtile", "properties": {"title": { "type": "multiplatform.text", "data": "MENÚ"}}},
+              { "id": "drawer_to_home_1", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"home"}}, "title": {"type":"multiplatform.text", "data":"Inicio"}}, "events": {"onTap": {"action":"navigate", "route":"/"}}},
+              { "id": "drawer_to_screen2_1", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"view_agenda"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 2 (Anidada)"}}, "events": {"onTap": {"action":"navigate", "route":"/screen2"}}},
+              { "id": "drawer_to_screen3_1", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"settings"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 3"}}, "events": {"onTap": {"action":"navigate", "route":"/screen3"}}}
             ]
           },
+          { // Body de la pantalla Home
+            "type": "multiplatform.container",
+            "properties": {"alignment": "center"}, // Para centrar el texto
+            "children": [
+              { "type": "multiplatform.text", "data": "Bienvenido a la Pantalla Principal" }
+            ]
+          }
+        ]
+      },
+      // --- PANTALLA 2 (Con Navegación Interna) ---
+      {
+        "route": "/screen2",
+        "id": "screen2_scaffold",
+        "type": "material.scaffold",
+        "children": [
+          {
+            "type": "material.appBar",
+            "properties": {
+              "title": { "type": "multiplatform.text", "data": "Pantalla 2" }
+              // El botón de "atrás" aquí será manejado por el Navigator anidado o el principal
+            }
+          },
+          {
+            "type": "material.drawer",
+            "id": "app_drawer_screen2", // Mismos items para consistencia
+            "children": [
+              { "type": "material.listtile", "properties": {"title": { "type": "multiplatform.text", "data": "MENÚ"}}},
+              { "id": "drawer_to_home_2", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"home"}}, "title": {"type":"multiplatform.text", "data":"Inicio"}}, "events": {"onTap": {"action":"navigate", "route":"/"}}},
+              { "id": "drawer_to_screen2_2", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"view_agenda"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 2 (Anidada)"}}, "events": {"onTap": {"action":"navigate", "route":"/screen2"}}},
+              { "id": "drawer_to_screen3_2", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"settings"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 3"}}, "events": {"onTap": {"action":"navigate", "route":"/screen3"}}}
+            ]
+          },
+          { // Body de Screen 2 es el Navigator Anidado
+            "id": "screen2_nested_navigator", // ID único para este navigator
+            "type": "material.navigator",    // Usa tu MaterialNavigatorBuilder
+            "properties": {
+              "initialRoute": "/"           // Ruta inicial DENTRO de este navigator anidado
+            },
+            "children": [ // Hijos del Navigator: Definiciones de RUTAS INTERNAS
+              // --- Pantalla Interna 2A (Nivel 1) ---
+              {
+                "nestedRoute": "/", // Ruta relativa al navigator anidado
+                "screen": {         // Definición de la pantalla para esta ruta interna
+                  "id": "screen2_view_A",
+                  "type": "multiplatform.column",
+                  "styles": {"padding": {"all": 16.0}},
+                  "properties": {"mainAxisAlignment": "start", "crossAxisAlignment":"stretch"},
+                  "children": [
+                    { "type": "multiplatform.text", "data": "Pantalla 2 - Vista A", "style": {"fontSize": 20.0, "fontWeight": "bold"} },
+                    { "type": "multiplatform.container", "properties": {"height": 20.0}},
+                    {
+                      "type": "material.card", // Usamos Card + ListTile como botón
+                      "children": [{
+                        "id": "goto_2B_button",
+                        "type": "material.listtile",
+                        "properties": {"title": {"type":"multiplatform.text", "data":"Ir a Vista Interna B"}, "leading": {"type":"multiplatform.icon", "properties":{"icon":"arrow_forward"}}},
+                        "events": {"onTap": {"action":"nested_navigate", "navigatorId":"screen2_nested_navigator", "nestedRoute":"/view_b"}}
+                      }]
+                    }
+                  ]
+                }
+              },
+              // --- Pantalla Interna 2B (Nivel 2) ---
+              {
+                "nestedRoute": "/view_b",
+                "screen": {
+                  "id": "screen2_view_B",
+                  "type": "multiplatform.column",
+                  "styles": {"padding": {"all": 16.0}, "backgroundColor": "#FFFDE7"},
+                  "properties": {"mainAxisAlignment": "start", "crossAxisAlignment":"stretch"},
+                  "children": [
+                    { "id": "s2b_title", "type": "multiplatform.text", "data": "Pantalla 2 - Vista B", "style": {"fontSize": 20.0, "fontWeight": "bold"} },
+                    { "type": "multiplatform.container", "properties": {"height": 20.0}},
+                    {
+                      "id": "action_card_1",
+                      "type": "material.card",
+                      "children": [{
+                        "id": "goto_2C_button",
+                        "type": "material.listtile",
+                        "properties": {"title": {"type":"multiplatform.text", "data":"Ir a Vista Interna C"}, "leading": {"type":"multiplatform.icon", "properties":{"icon":"arrow_forward"}}},
+                        "events": {"onTap": {"action":"nested_navigate", "navigatorId":"screen2_nested_navigator", "nestedRoute":"/view_c"}}
+                      }]
+                    },
+                    { "type": "multiplatform.container", "properties": {"height": 10.0}},
+                    {
+                      "id": "action_card_2",
+                      "type": "material.card",
+                      "children": [{
+                        "id": "back_to_2A_button",
+                        "type": "material.listtile",
+                        "properties": {"title": {"type":"multiplatform.text", "data":"Volver a Vista A"}, "leading": {"type":"multiplatform.icon", "properties":{"icon":"arrow_back"}}},
+                        "events": {"onTap": {"action":"nested_pop", "navigatorId":"screen2_nested_navigator"}}
+                      }]
+                    }
+                  ]
+                }
+              },
+              // --- Pantalla Interna 2C (Nivel 3) ---
+              {
+                "nestedRoute": "/view_c",
+                "screen": {
+                  "id": "screen2_view_C",
+                  "type": "multiplatform.column",
+                  "styles": {"padding": {"all": 16.0}, "backgroundColor": "#E0F7FA"},
+                  "properties": {"mainAxisAlignment": "start", "crossAxisAlignment":"stretch"},
+                  "children": [
+                    { "type": "multiplatform.text", "data": "Pantalla 2 - Vista C (Final Interna)", "style": {"fontSize": 20.0, "fontWeight": "bold"} },
+                    { "type": "multiplatform.container", "properties": {"height": 20.0}},
+                    {
+                      "type": "material.card",
+                      "children": [{
+                        "id": "back_to_2B_button",
+                        "type": "material.listtile",
+                        "properties": {"title": {"type":"multiplatform.text", "data":"Volver a Vista B"}, "leading": {"type":"multiplatform.icon", "properties":{"icon":"arrow_back"}}},
+                        "events": {"onTap": {"action":"nested_pop", "navigatorId":"screen2_nested_navigator"}}
+                      }]
+                    }
+                  ]
+                }
+              }
+            ] // Fin de children (rutas internas) del Navigator
+          } // Fin del body (Navigator anidado)
+        ]
+      },
+      // --- PANTALLA 3 (Settings) ---
+      {
+        "route": "/screen3",
+        "id": "screen3_scaffold",
+        "type": "material.scaffold",
+        "children": [
+          {
+            "type": "material.appBar",
+            "properties": {
+              "title": { "type": "multiplatform.text", "data": "Pantalla 3 (Config)" }
+            }
+          },
+          {
+            "type": "material.drawer",
+            "id": "app_drawer_screen3",
+            "children": [
+              { "type": "material.listtile", "properties": {"title": { "type": "multiplatform.text", "data": "MENÚ"}}},
+              { "id": "drawer_to_home_3", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"home"}}, "title": {"type":"multiplatform.text", "data":"Inicio"}}, "events": {"onTap": {"action":"navigate", "route":"/"}}},
+              { "id": "drawer_to_screen2_3", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"view_agenda"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 2 (Anidada)"}}, "events": {"onTap": {"action":"navigate", "route":"/screen2"}}},
+              { "id": "drawer_to_screen3_3", "type": "material.listtile", "properties": {"leading": {"type":"multiplatform.icon", "properties":{"icon":"settings"}}, "title": {"type":"multiplatform.text", "data":"Pantalla 3"}}, "events": {"onTap": {"action":"navigate", "route":"/screen3"}}}
+            ]
+          },
+          { // Body de la pantalla Settings
+            "type": "multiplatform.container",
+            "properties": {"alignment": "center"},
+            "children": [
+              { "type": "multiplatform.text", "data": "Contenido de la Pantalla 3 (Configuración)" }
+            ]
+          }
         ]
       }
     ]
@@ -363,6 +288,12 @@ void main() {
             create: (context) {
               print("Creating FocusNodeStateNotifier...");
               return FocusNodeStateNotifier();
+            },
+          ),
+          ChangeNotifierProvider<NavigatorStateNotifier>(
+            create: (context) {
+              print("Creating NavigatorStateNotifier...");
+              return NavigatorStateNotifier();
             },
           ),
         ],
