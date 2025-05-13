@@ -69,11 +69,6 @@ void main() {
     });
   }, null);
 
-  void testino(BuildContext context) {
-    print("Test function called");
-    final notifier = context.read<WidgetStateNotifier>();
-    notifier.updateState('abc123', DateTime.now().toString());
-  }
 
   Map<String, dynamic> json = {
     "id": "mi_aplicacion_principal",
