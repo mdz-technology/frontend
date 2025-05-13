@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -158,22 +157,18 @@ Alignment? parseAlignment(String? value) {
 
 EdgeInsets? parseEdgeInsets(dynamic value) {
   if (value == null) {
-    return null; // Devuelve null si el valor es null
+    return null;
   }
 
-  // 1. Soporte para un solo número (EdgeInsets.all)
   if (value is num) {
     return EdgeInsets.all(value.toDouble());
   }
 
-  // 2. Soporte para la cadena "zero"
   if (value is String && value.toLowerCase() == 'zero') {
     return EdgeInsets.zero;
   }
 
-  // 3. Soporte para Lista [Left, Top, Right, Bottom]
   if (value is List) {
-    // Validar que la lista tenga 4 elementos y todos sean números
     if (value.length == 4 && value.every((item) => item is num)) {
       return EdgeInsets.fromLTRB(
         (value[0] as num).toDouble(), // Left
@@ -183,29 +178,25 @@ EdgeInsets? parseEdgeInsets(dynamic value) {
       );
     } else {
       print('Advertencia: Lista para EdgeInsets no tiene 4 números: $value');
-      return null; // Formato de lista inválido
+      return null;
     }
   }
 
-  // 4. Soporte para Map (varios formatos)
   if (value is Map<String, dynamic>) {
-    // 4a. Prioridad 1: Clave "all"
     if (value.containsKey('all')) {
       final allValue = value['all'];
       if (allValue is num) {
         return EdgeInsets.all(allValue.toDouble());
       } else {
         print('Advertencia: Valor "all" en EdgeInsets no es numérico: $value');
-        return null; // Valor 'all' inválido
+        return null;
       }
     }
 
-    // 4b. Prioridad 2: Claves "horizontal" o "vertical" (EdgeInsets.symmetric)
     if (value.containsKey('horizontal') || value.containsKey('vertical')) {
       final horizontalValue = value['horizontal'];
       final verticalValue = value['vertical'];
 
-      // Validar que los valores presentes sean numéricos
       if (horizontalValue != null && !(horizontalValue is num)) {
         print(
             'Advertencia: Valor "horizontal" en EdgeInsets no es numérico: $value');
@@ -223,13 +214,10 @@ EdgeInsets? parseEdgeInsets(dynamic value) {
       );
     }
 
-    // 4c. Prioridad 3: Claves "left", "top", "right", "bottom" (EdgeInsets.only - como estaba antes)
-    // Verificamos si existe al menos una de estas claves para diferenciar de un mapa vacío {}
     if (value.containsKey('left') ||
         value.containsKey('top') ||
         value.containsKey('right') ||
         value.containsKey('bottom')) {
-      // Validar que los valores presentes sean numéricos
       if (value['left'] != null && !(value['left'] is num)) {
         print('Advertencia: Valor "left" en EdgeInsets no es numérico: $value');
         return null;
@@ -257,14 +245,8 @@ EdgeInsets? parseEdgeInsets(dynamic value) {
       );
     }
 
-    // Si es un mapa pero no coincide con ninguno de los formatos conocidos (ej: mapa vacío {}),
-    // se considera no válido para EdgeInsets. Podría devolver EdgeInsets.zero aquí si se desea
-    // que un mapa vacío signifique cero padding/margin, pero devolver null es más seguro.
-    // print('Advertencia: Mapa para EdgeInsets no coincide con formatos conocidos: $value');
-    // return null; // Comentado para que caiga al return null general
   }
 
-  // Si el tipo de 'value' no es ninguno de los soportados
   print(
       'Advertencia: Formato no soportado para EdgeInsets: ${value.runtimeType} - $value');
   return null;
@@ -403,9 +385,9 @@ TextBaseline? parseTextBaseline(dynamic value) {
 int? parseInt(dynamic value) {
   if (value == null) return null;
   if (value is int) return value;
-  if (value is double) return value.toInt(); // Allow double like 10.0
+  if (value is double) return value.toInt();
   if (value is String) return int.tryParse(value);
-  return null; // Invalid type
+  return null;
 }
 
 TextAlign parseTextAlign(String? align) {
@@ -419,10 +401,10 @@ TextAlign parseTextAlign(String? align) {
     case "justify":
       return TextAlign.justify;
     case "end":
-      return TextAlign.end; // Added end
-    case "start": // Fallthrough
+      return TextAlign.end;
+    case "start":
     default:
-      return TextAlign.start; // Default
+      return TextAlign.start;
   }
 }
 
@@ -434,9 +416,9 @@ TextOverflow parseTextOverflow(String? overflow) {
       return TextOverflow.fade;
     case "ellipsis":
       return TextOverflow.ellipsis;
-    case "visible": // Fallthrough
+    case "visible":
     default:
-      return TextOverflow.visible; // Default
+      return TextOverflow.visible;
   }
 }
 
@@ -447,7 +429,7 @@ TextWidthBasis? parseTextWidthBasis(String? basis) {
     case 'longestLine':
       return TextWidthBasis.longestLine;
     default:
-      return null; // Text widget handles null
+      return null;
   }
 }
 
@@ -456,7 +438,7 @@ FontWeight parseFontWeight(String? weight) {
     case "bold":
       return FontWeight.bold;
     case "normal":
-      return FontWeight.normal; // Explicit normal
+      return FontWeight.normal;
     case "w100":
       return FontWeight.w100;
     case "w200":
@@ -464,19 +446,19 @@ FontWeight parseFontWeight(String? weight) {
     case "w300":
       return FontWeight.w300;
     case "w400":
-      return FontWeight.w400; // Same as normal
+      return FontWeight.w400;
     case "w500":
       return FontWeight.w500;
     case "w600":
       return FontWeight.w600;
     case "w700":
-      return FontWeight.w700; // Same as bold
+      return FontWeight.w700;
     case "w800":
       return FontWeight.w800;
     case "w900":
       return FontWeight.w900;
     default:
-      return FontWeight.normal; // Default
+      return FontWeight.normal;
   }
 }
 
@@ -484,9 +466,9 @@ FontStyle parseFontStyle(String? style) {
   switch (style) {
     case "italic":
       return FontStyle.italic;
-    case "normal": // Fallthrough
+    case "normal":
     default:
-      return FontStyle.normal; // Default
+      return FontStyle.normal;
   }
 }
 
@@ -498,14 +480,14 @@ TextDecoration? parseTextDecoration(String? decoration) {
       return TextDecoration.lineThrough;
     case "overline":
       return TextDecoration.overline;
-    case "none": // Fallthrough
+    case "none":
     default:
-      return TextDecoration.none; // Default is none, but allow null if needed
+      return TextDecoration.none;
   }
 }
 
 TextHeightBehavior? parseTextHeightBehavior(dynamic jsonValue) {
-  if (jsonValue is! Map) return null; // Expect a Map
+  if (jsonValue is! Map) return null;
   final Map<String, dynamic> json = Map<String, dynamic>.from(jsonValue);
 
   final bool applyFirst = json['applyHeightToFirstAscent'] as bool? ?? true;
@@ -590,7 +572,7 @@ MouseCursor? parseMouseCursor(dynamic value) {
     case 'copy': return SystemMouseCursors.copy;
     case 'disappearing': return SystemMouseCursors.disappearing;
     case 'no_drop': return SystemMouseCursors.noDrop;
-    case 'none': return SystemMouseCursors.none; // Oculta el cursor
+    case 'none': return SystemMouseCursors.none;
     case 'precise': return SystemMouseCursors.precise;
     case 'resize_down': return SystemMouseCursors.resizeDown;
     case 'resize_down_left': return SystemMouseCursors.resizeDownLeft;
@@ -646,7 +628,6 @@ ButtonStyle? parseButtonStyle(dynamic value) {
 
   final map = value as Map<String, dynamic>;
 
-  // --- Propiedades que usan MaterialStateProperty ---
   final MaterialStateProperty<TextStyle?>? textStyle = map.containsKey('textStyle')
       ? MaterialStateProperty.all(parseTextStyle(map['textStyle'])) // Necesita parseTextStyle
       : null;
@@ -717,8 +698,8 @@ ButtonStyle? parseButtonStyle(dynamic value) {
 
 
 TextStyle? parseTextStyle(dynamic value) {
-  print("TODO: Implement parseTextStyle");
-  return null; // Placeholder
+
+  return null;
 }
 
 Size? parseSize(dynamic value) {
@@ -735,11 +716,11 @@ Size? parseSize(dynamic value) {
 
 BorderSide? parseBorderSide(dynamic value) {
   if (value == null || value is! Map<String, dynamic>) {
-    return null; // O BorderSide.none
+    return null;
   }
   final map = value as Map<String, dynamic>;
-  final Color color = parseColor(map['color']) ?? const Color(0xFF000000); // Default negro
-  final double width = parseDouble(map['width']) ?? 1.0; // Default 1.0
+  final Color color = parseColor(map['color']) ?? const Color(0xFF000000);
+  final double width = parseDouble(map['width']) ?? 1.0;
   // TODO: Parsear BorderStyle (solid, none) si es necesario
   // final BorderStyle style = parseBorderStyle(map['style']) ?? BorderStyle.solid;
   return BorderSide(
@@ -775,7 +756,6 @@ Duration? parseDuration(dynamic value) {
 
 BlendMode? parseBlendMode(dynamic value) {
   if (value == null || value is! String) {
-    // Si el valor es nulo o no es un string, no se puede parsear.
     return null;
   }
 
@@ -785,7 +765,6 @@ BlendMode? parseBlendMode(dynamic value) {
     case 'clear': return BlendMode.clear;
     case 'src': return BlendMode.src;
     case 'dst': return BlendMode.dst;
-  // Incluir variaciones comunes como con/sin underscore si se prefiere
     case 'srcover':
     case 'src_over': return BlendMode.srcOver;
     case 'dstover':
@@ -832,38 +811,24 @@ BlendMode? parseBlendMode(dynamic value) {
   }
 }
 
-// --- Parsers para TextField y relacionados ---
-
-/// Parsea un valor JSON a un InputBorder.
-/// Acepta:
-///   - null -> null
-///   - String "none" -> InputBorder.none
-///   - Map: { "type": "outline"|"underline", "color": "#...", "width": ..., "borderRadius": {...}, "gapPadding": ... }
 InputBorder? parseInputBorder(dynamic value) {
   if (value == null) return null;
   if (value is String && value.toLowerCase() == 'none') {
     return InputBorder.none;
   }
   if (value is Map<String, dynamic>) {
-    // Extraer tipo, default a 'underline' si no se especifica explícitamente 'outline' o 'none'
     String type = value['type'] as String? ?? 'underline';
-    // Si se especificó 'none' como tipo en el mapa, también retorna none
     if (type.toLowerCase() == 'none') {
       return InputBorder.none;
     }
 
-    // Parsear propiedades comunes de BorderSide
-    // Usar un color por defecto más visible que el negro puro si no se especifica
     final Color color = parseColor(value['color']) ?? Colors.grey.shade600;
     final double width = parseDouble(value['width']) ?? 1.0;
     final BorderSide borderSide = BorderSide(color: color, width: width);
 
-    // Parsear borderRadius (ya existe en tus utils)
-    // Usar un default razonable para bordes si no se especifica
     final BorderRadius borderRadius = parseBorderRadius(value['borderRadius']) ??
         (type == 'outline' ? BorderRadius.circular(4.0) : BorderRadius.zero);
 
-    // Parsear gapPadding específico de OutlineInputBorder
     final double gapPadding = parseDouble(value['gapPadding']) ?? 4.0;
 
     switch (type.toLowerCase()) {
@@ -876,7 +841,6 @@ InputBorder? parseInputBorder(dynamic value) {
       case 'underline':
         return UnderlineInputBorder(
           borderSide: borderSide,
-          // UnderlineInputBorder también respeta borderRadius (para las esquinas superiores)
           borderRadius: borderRadius,
         );
       default:
@@ -885,11 +849,9 @@ InputBorder? parseInputBorder(dynamic value) {
     }
   }
   print("Warning: Formato no reconocido para InputBorder: ${value.runtimeType} - $value");
-  return null; // Fallback si el formato no es String ni Map
+  return null;
 }
 
-
-/// Parsea un string al enum TextInputType nullable.
 TextInputType? parseTextInputType(String? type) {
   if (type == null) return null;
   switch (type.toLowerCase()) {
@@ -911,7 +873,6 @@ TextInputType? parseTextInputType(String? type) {
   }
 }
 
-/// Parsea un string al enum TextInputAction nullable.
 TextInputAction? parseTextInputAction(String? action) {
   if (action == null) return null;
   switch (action.toLowerCase()) {
@@ -934,7 +895,6 @@ TextInputAction? parseTextInputAction(String? action) {
   }
 }
 
-/// Parsea un string al enum TextCapitalization nullable.
 TextCapitalization? parseTextCapitalization(String? capitalization) {
   if (capitalization == null) return null; // TextField usa 'none' como default si es null
   switch (capitalization.toLowerCase()) {
@@ -948,7 +908,6 @@ TextCapitalization? parseTextCapitalization(String? capitalization) {
   }
 }
 
-/// Parsea un string ("top", "center", "bottom") o un número a TextAlignVertical nullable.
 TextAlignVertical? parseTextAlignVertical(dynamic value) {
   if (value == null) return null;
   if (value is String) {
@@ -961,7 +920,7 @@ TextAlignVertical? parseTextAlignVertical(dynamic value) {
         return null;
     }
   }
-  // Permite especificar el factor Y directamente como un número (ej: 0.0 para centro)
+
   if (value is num) {
     return TextAlignVertical(y: value.toDouble());
   }
@@ -969,7 +928,6 @@ TextAlignVertical? parseTextAlignVertical(dynamic value) {
   return null;
 }
 
-/// Parsea un string ("enabled", "disabled") al enum SmartDashesType nullable.
 SmartDashesType? parseSmartDashesType(String? type) {
   if (type == null) return null; // TextField usa un default interno si es null
   switch (type.toLowerCase()) {
@@ -981,7 +939,7 @@ SmartDashesType? parseSmartDashesType(String? type) {
   }
 }
 
-/// Parsea un string ("enabled", "disabled") al enum SmartQuotesType nullable.
+
 SmartQuotesType? parseSmartQuotesType(String? type) {
   if (type == null) return null; // TextField usa un default interno si es null
   switch (type.toLowerCase()) {
@@ -993,7 +951,6 @@ SmartQuotesType? parseSmartQuotesType(String? type) {
   }
 }
 
-/// Parsea un string al enum MaxLengthEnforcement nullable.
 MaxLengthEnforcement? parseMaxLengthEnforcement(String? enforcement) {
   if (enforcement == null) return null; // TextField usa un default interno si es null
   switch (enforcement.toLowerCase()) {
@@ -1006,7 +963,6 @@ MaxLengthEnforcement? parseMaxLengthEnforcement(String? enforcement) {
   }
 }
 
-/// Parsea un string ("light", "dark") al enum Brightness nullable.
 Brightness? parseKeyboardAppearance(String? appearance) {
   if (appearance == null) return null; // Usa el default de la plataforma
   switch (appearance.toLowerCase()) {
@@ -1018,8 +974,6 @@ Brightness? parseKeyboardAppearance(String? appearance) {
   }
 }
 
-/// Parsea un string ("start", "down") al enum DragStartBehavior.
-/// Devuelve DragStartBehavior.start por defecto si el valor es nulo o inválido.
 DragStartBehavior parseDragStartBehavior(String? behavior) {
   // Default definido en el constructor de TextField es 'start'
   if (behavior == null) return DragStartBehavior.start;
@@ -1032,7 +986,6 @@ DragStartBehavior parseDragStartBehavior(String? behavior) {
   }
 }
 
-/// Parsea un string a una instancia de ScrollPhysics nullable.
 ScrollPhysics? parseScrollPhysics(String? physics) {
   if (physics == null) return null; // Usa el default de la plataforma
   switch (physics.toLowerCase()) {
@@ -1130,19 +1083,16 @@ ListTileStyle? parseListTileStyle(String? style) {
     case 'drawer': return ListTileStyle.drawer;
     default:
       print("Warning: ListTileStyle no reconocido '$style'.");
-      return null; // O un default como ListTileStyle.list
+      return null;
   }
 }
 
-/// Parsea un string ("top", "center", "bottom") al enum ListTileTitleAlignment nullable.
 ListTileTitleAlignment? parseListTileTitleAlignment(String? alignment) {
   if (alignment == null) return null;
   switch (alignment.toLowerCase()) {
     case 'top': return ListTileTitleAlignment.top;
     case 'center': return ListTileTitleAlignment.center;
     case 'bottom': return ListTileTitleAlignment.bottom;
-  // case 'threeLine': return ListTileTitleAlignment.threeLine; // Si se necesita
-  // case 'adaptive': return ListTileTitleAlignment.adaptive; // Si se necesita
     default:
       print("Warning: ListTileTitleAlignment no reconocido '$alignment'.");
       return null;
@@ -1155,12 +1105,8 @@ ShapeBorder? parseShapeBorder(dynamic value) {
   }
   final Map<String, dynamic> map = value;
   final String? type = map['type'] as String?;
-  // Parsear BorderSide si se proporciona (puede ser null)
-  // Necesita parseBorderSide en utils.dart
   final BorderSide? side = parseBorderSide(map['side']);
 
-  // Parsear BorderRadius si se proporciona (puede ser null)
-  // parseBorderRadius ya debería existir en tus utils
   final BorderRadiusGeometry? borderRadius = parseBorderRadius(map['borderRadius']);
 
 
@@ -1192,16 +1138,14 @@ ShapeBorder? parseShapeBorder(dynamic value) {
         borderRadius: borderRadius ?? BorderRadius.zero,
         side: side ?? BorderSide.none,
       );
-  // Podrías añadir 'linearBorder', 'starBorder' si fueran necesarios
     default:
       print("Warning: Tipo de ShapeBorder no reconocido '$type'.");
-      return null; // O devolver un default como RoundedRectangleBorder()
+      return null;
   }
 }
 
-/// Parsea un string ("horizontal", "vertical") a un enum Axis.
 Axis? parseAxis(String? axis) {
-  if (axis == null) return null; // Default es vertical en ListView
+  if (axis == null) return null;
   switch (axis.toLowerCase()) {
     case 'horizontal': return Axis.horizontal;
     case 'vertical': return Axis.vertical;
@@ -1239,7 +1183,7 @@ HitTestBehavior? parseHitTestBehavior(String? behavior) {
 
 FlexFit? parseFlexFit(dynamic value) {
   if (value == null || value is! String) {
-    return null; // Devuelve null si no es un string válido
+    return null;
   }
   switch (value.toLowerCase()) {
     case 'tight':
@@ -1248,6 +1192,27 @@ FlexFit? parseFlexFit(dynamic value) {
       return FlexFit.loose;
     default:
       print("Warning: FlexFit no reconocido '$value'.");
-      return null; // Devuelve null si el string no es válido
+      return null;
   }
+}
+
+Key? parseKey(String? id){
+  return (id != null && id.isNotEmpty) ? Key(id) : null;
+}
+
+T? getResolvedProperty<T>({
+  required Map<String, dynamic>? stateMap,
+  required String stateKey,
+  required Map<String, dynamic> jsonMap,
+  required String jsonKey,
+  required T? Function(dynamic rawValue) parser,
+  T? defaultValue,
+}) {
+  if (stateMap != null && stateMap.containsKey(stateKey)) {
+    return parser(stateMap[stateKey]);
+  }
+  if (jsonMap.containsKey(jsonKey)) {
+    return parser(jsonMap[jsonKey]);
+  }
+  return defaultValue;
 }

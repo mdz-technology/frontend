@@ -18,12 +18,12 @@ class MultiplatformContainerBuilder {
       Map<String, dynamic> json,
       [Map<String, dynamic>? params]) {
 
-    final String? localId = json['id']?.toString();
+    final String? id = json['id']?.toString();
     final Map<String, dynamic> localStyles = Map<String, dynamic>.from(json['styles'] as Map? ?? {});
     final Map<String, dynamic> localProperties = Map<String, dynamic>.from(json['properties'] as Map? ?? {});
     final List<dynamic> localChildren = json['children'] as List<dynamic>? ?? [];
 
-    final Key? key = (localId != null && localId.isNotEmpty) ? Key(localId) : null;
+    final Key? key = parseKey(id);
 
     final AlignmentGeometry? alignment = parseAlignment(localStyles['alignment']?.toString());
     final EdgeInsetsGeometry? padding = parseEdgeInsets(localStyles['padding']);
@@ -49,11 +49,11 @@ class MultiplatformContainerBuilder {
             params,
           );
         } catch (e) {
-          print("Error building child for Container (id: $localId): $e. Child JSON: $firstChildJson");
+          print("Error building child for Container (id: $id): $e. Child JSON: $firstChildJson");
           childWidget = const SizedBox.shrink(key: ValueKey('error_child_container'));
         }
       } else if (firstChildJson != null) {
-        print("Warning: Child for Container (id: $localId) is not a valid Map. Child: $firstChildJson");
+        print("Warning: Child for Container (id: $id) is not a valid Map. Child: $firstChildJson");
       }
     }
 

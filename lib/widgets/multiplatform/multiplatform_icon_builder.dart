@@ -19,7 +19,7 @@ class MultiplatformIconBuilder {
     final Map<String, dynamic> styles = json['styles'] as Map<String, dynamic>? ?? {};
     final Map<String, dynamic> properties = json['properties'] as Map<String, dynamic>? ?? {};
 
-    final Key? key = id != null ? Key(id) : null;
+    final Key? key = parseKey(id);
 
     final String? iconName = parseString(properties['icon']);
     final IconData? iconData = _parseIconData(iconName);
@@ -114,6 +114,7 @@ class MultiplatformIconBuilder {
       case 'shopping_bag': return Icons.shopping_bag;
       case 'article': return Icons.article;
       case 'view_agenda': return Icons.view_agenda;
+      case 'arrow_forward_ios': return Icons.arrow_forward_ios;
 
       default:
         print("Warning: IconData para '$iconName' no mapeado en _parseIconData.");

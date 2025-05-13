@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/utils.dart';
-
-import '../../comm/sender.dart';
-import '../../comm/sender_impl.dart';
 import '../../widget_factory.dart';
+import '../event_handler.dart';
 
 class IconButtonBuilder {
 
@@ -69,37 +67,22 @@ class IconButtonBuilder {
     }
 
     VoidCallback? onPressedCallback;
-    final dynamic onPressedEventConfig = events['onPressed'];
+    final dynamic onPressedEventConfigJson = events['onPressed'];
 
     if (enabled) {
-      if (onPressedEventConfig != null && onPressedEventConfig is Map<String, dynamic>) {
-
+      if (onPressedEventConfigJson != null && onPressedEventConfigJson is Map<String, dynamic>) {
+        final Map<String, dynamic> eventConfig = Map<String, dynamic>.from(onPressedEventConfigJson);
         onPressedCallback = () {
-          final Sender sender = SenderImpl();
-          final String? action = onPressedEventConfig['action'] as String?;
-          String? message = onPressedEventConfig['message'] as String?;
-          String? targetWidgetId = onPressedEventConfig['widgetId'] as String?;
-
-          if (targetWidgetId == '{id}' && id != null) targetWidgetId = id;
-
-          final String stringToSend = message ?? action ?? "";
-          final Map<String, dynamic> payload = {
-            if (action != null) 'action': action,
-            if (message != null) 'message': message,
-            if (targetWidgetId != null) 'widgetId': targetWidgetId,
-            'eventType': 'onPressed',
-            'sourceId': id,
-          };
-          if (payload.containsKey('action')) {
-            print('Sending event: $payload');
-            sender.send(stringToSend);
-          } else {
-            print('Warning: onPressed event for widget $id has no action defined.');
-          }
+          EventHandler.handleEvent(
+            context: context,
+            widgetId: id,
+            eventType: 'onPressed',
+            eventConfig: eventConfig,
+          );
         };
       } else {
         onPressedCallback = () {
-          print("IconButton '$id' pressed, but no 'onPressed' action defined in JSON.");
+          print("ℹ️ IconButton '$id' pressed, but no 'onPressed' eventConfig defined in JSON.");
         };
       }
     } else {

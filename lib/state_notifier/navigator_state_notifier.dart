@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class NavigatorStateNotifier with ChangeNotifier {
+
   final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {};
+  final Map<String, Map<String, dynamic>> _pendingScreenJsons = {};
 
   GlobalKey<NavigatorState> getOrCreateNavigatorKey(String navigatorId) {
     if (!_navigatorKeys.containsKey(navigatorId)) {
@@ -31,6 +33,23 @@ class NavigatorStateNotifier with ChangeNotifier {
       }
     } else {
       print("[NavigatorNotifier] Navigator '$navigatorId' not found or has no state during pop.");
+    }
+  }
+
+  void setPendingScreenJson(String routeName, Map<String, dynamic> screenJson) {
+    _pendingScreenJsons[routeName] = screenJson;
+  }
+
+  Map<String, dynamic>? getPendingScreenJson(String routeName) {
+    if (_pendingScreenJsons.containsKey(routeName)) {
+      return _pendingScreenJsons[routeName];
+    }
+    return null;
+  }
+
+  void clearPendingScreenJson(String routeName) {
+    if (_pendingScreenJsons.containsKey(routeName)) {
+      _pendingScreenJsons.remove(routeName);
     }
   }
 

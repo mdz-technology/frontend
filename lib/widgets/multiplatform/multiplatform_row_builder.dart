@@ -19,7 +19,7 @@ class MultiplatformRowBuilder {
     final List<dynamic> childrenJson = json['children'] ?? [];
     final String? id = json['id'] as String?;
 
-    final Key? key = id != null ? Key(id) : null;
+    final Key? key = parseKey(id);
 
     final MainAxisAlignment mainAxisAlignment = parseMainAxisAlignment(properties['mainAxisAlignment']) ?? MainAxisAlignment.start;
     final MainAxisSize mainAxisSize = parseMainAxisSize(properties['mainAxisSize']) ?? MainAxisSize.max;

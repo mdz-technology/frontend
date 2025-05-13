@@ -17,7 +17,7 @@ class MultiplatformColumnBuilder {
     final List<dynamic> childrenJson = json['children'] ?? [];
     final String? id = json['id'] as String?;
 
-    final Key? key = id != null ? Key(id) : null;
+    final Key? key = parseKey(id);
 
     final MainAxisAlignment mainAxisAlignment = parseMainAxisAlignment(properties['mainAxisAlignment']) ?? MainAxisAlignment.start;
     final MainAxisSize mainAxisSize = parseMainAxisSize(properties['mainAxisSize']) ?? MainAxisSize.max;
@@ -39,17 +39,6 @@ class MultiplatformColumnBuilder {
       }
     }).toList();
 
-    print("--- Debugging Children Keys for Column: ${json['id']} ---");
-    for (int i = 0; i < childrenWidgets.length; i++) {
-      Widget childWidget = childrenWidgets[i];
-      Map<String, dynamic> childJson = {};
-      if (i < childJson.length && childJson[i] is Map<String, dynamic>) {
-        childJson = childJson[i] as Map<String, dynamic>;
-      }
-      print("Child $i: Type='${childJson['type']}', JSON ID='${childJson['id']}', Widget Key='${childWidget.key}'");
-    }
-    print("--- End Debugging Children Keys ---");
-
     return Column(
       key: key,
       mainAxisAlignment: mainAxisAlignment,
@@ -63,6 +52,5 @@ class MultiplatformColumnBuilder {
     );
 
   }
-
 
 }

@@ -21,7 +21,7 @@ class MultiplatformFlexibleBuilder {
     final Map<String, dynamic> properties = json['properties'] as Map<String, dynamic>? ?? {};
     final List<dynamic> childrenJson = json['children'] as List<dynamic>? ?? [];
 
-    final Key? key = id != null ? Key(id) : null;
+    final Key? key = parseKey(id);
 
     final int flex = parseInt(properties['flex']) ?? 1;
 

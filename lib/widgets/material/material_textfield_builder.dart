@@ -6,11 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:frontend/widgets/utils.dart';
 import 'package:provider/provider.dart';
 
-import '../../comm/sender.dart';
-import '../../comm/sender_impl.dart';
 import '../../state_notifier/text_state_notifier.dart';
 import '../../widget_factory.dart';
 import '../../state_notifier/focusnode_state_notifier.dart';
+import '../event_handler.dart';
 
 class MaterialTextFieldBuilder {
 
@@ -42,11 +41,7 @@ class MaterialTextFieldBuilder {
 
     final focusStatenotifier = context.read<FocusNodeStateNotifier>();
 
-    final FocusNode focusNode = focusStatenotifier.getOrCreateNode(
-      id,
-      // skipTraversal: skipTraversal, // Ejemplo
-      // canRequestFocus: canRequestFocus // Ejemplo
-    );
+    final FocusNode focusNode = focusStatenotifier.getOrCreateNode(id,);
     final UndoHistoryController? undoController = null; // TODO: Manejar desde estado si es necesario
     final TextInputType? keyboardType = parseTextInputType(properties['keyboardType']);
     final TextInputAction? textInputAction = parseTextInputAction(properties['textInputAction']);
@@ -101,84 +96,60 @@ class MaterialTextFieldBuilder {
         styles['decoration'] as Map<String, dynamic>?, context, params
     ) ?? const InputDecoration();
 
-    final Sender sender = SenderImpl();
-
     ValueChanged<String>? onChangedCallback = events.containsKey('onChanged')
         ? (value) {
-      final eventConfig = events['onChanged'] as Map<String, dynamic>? ?? {};
-      final String? action = eventConfig['action'] as String?;
-      // Opcional: Actualizar estado local inmediatamente si es necesario para otros widgets
-      // notifier.updateState(id + '_lastValue', value); // Podría ser redundante si el controller ya lo hace
-      if (action != null) {
-        final payload = {
-          'action': action,
-          'widgetId': id, // Usar el ID validado
-          'value': value,
-          'eventType': 'onChanged',
-          if (eventConfig.containsKey('message')) 'message': eventConfig['message'],
-        };
-        print('Sending event: $payload');
-        sender.send(payload['value']);
-      }
+      final Map<String, dynamic> eventConfig = Map<String, dynamic>.from(events['onChanged'] as Map? ?? {});
+      EventHandler.handleEvent(
+        context: context,
+        widgetId: id,
+        eventType: 'onChanged',
+        eventConfig: eventConfig,
+        eventValue: value,
+      );
     }
         : null;
 
     VoidCallback? onEditingCompleteCallback = events.containsKey('onEditingComplete')
         ? () {
-      final eventConfig = events['onEditingComplete'] as Map<String, dynamic>? ?? {};
-      final String? action = eventConfig['action'] as String?;
-      if (action != null) {
-        final payload = {
-          'action': action,
-          'widgetId': id, // Usar el ID validado
-          'value': controller.text, // Valor actual del controller
-          'eventType': 'onEditingComplete',
-          if (eventConfig.containsKey('message')) 'message': eventConfig['message'],
-        };
-        print('Sending event: $payload');
-        sender.send(payload['value']);
-      }
+      final Map<String, dynamic> eventConfig = Map<String, dynamic>.from(events['onEditingComplete'] as Map? ?? {});
+      EventHandler.handleEvent(
+        context: context,
+        widgetId: id,
+        eventType: 'onEditingComplete',
+        eventConfig: eventConfig,
+        eventValue: controller.text,
+      );
     }
         : null;
 
     ValueChanged<String>? onSubmittedCallback = events.containsKey('onSubmitted')
         ? (value) {
-      final eventConfig = events['onSubmitted'] as Map<String, dynamic>? ?? {};
-      final String? action = eventConfig['action'] as String?;
-      if (action != null) {
-        final payload = {
-          'action': action,
-          'widgetId': id,
-          'value': value,
-          'eventType': 'onSubmitted',
-          if (eventConfig.containsKey('message')) 'message': eventConfig['message'],
-        };
-        print('Sending event: $payload');
-        sender.send(payload['value']);
-      }
+      final Map<String, dynamic> eventConfig = Map<String, dynamic>.from(events['onSubmitted'] as Map? ?? {});
+      EventHandler.handleEvent(
+        context: context,
+        widgetId: id,
+        eventType: 'onSubmitted',
+        eventConfig: eventConfig,
+        eventValue: value,
+      );
     }
         : null;
 
     VoidCallback? onTapCallback = events.containsKey('onTap')
         ? () {
-      final eventConfig = events['onTap'] as Map<String, dynamic>? ?? {};
-      final String? action = eventConfig['action'] as String?;
-      if (action != null) {
-        final payload = {
-          'action': action,
-          'widgetId': id, // Usar el ID validado
-          'eventType': 'onTap',
-          if (eventConfig.containsKey('message')) 'message': eventConfig['message'],
-        };
-        print('Sending event: $payload');
-        sender.send(payload['value']);
-      }
+      final Map<String, dynamic> eventConfig = Map<String, dynamic>.from(events['onTap'] as Map? ?? {});
+      EventHandler.handleEvent(
+        context: context,
+        widgetId: id,
+        eventType: 'onTap',
+        eventConfig: eventConfig,
+      );
     }
         : null;
 
     return TextField(
-      key: key, // Usa la key con el ID
-      controller: controller, // Usa el controller del Notifier
+      key: key,
+      controller: controller,
       focusNode: focusNode,
       undoController: undoController,
       decoration: decoration,
