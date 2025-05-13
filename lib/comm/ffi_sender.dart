@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-import 'rust_launcher.dart';
+import 'native_lib.dart';
 
 typedef SendMessageToRustC = Void Function(Pointer<Utf8>);
 typedef SendMessageToRustDart = void Function(Pointer<Utf8>);

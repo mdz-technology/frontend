@@ -1,5 +1,5 @@
 import 'dart:ffi';
-import 'rust_launcher.dart';
+import 'native_lib.dart';
 
 typedef DartPostCObjectFn = Bool Function(Int64, Pointer<Void>);
 
